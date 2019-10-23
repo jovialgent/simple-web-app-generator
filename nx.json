@@ -7,5 +7,21 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
-  "projects": {}
+  "projects": {
+    "client-actions": {
+      "tags": []
+    },
+    "sample-site-action": {
+      "tags": []
+    },
+    "sample-site-action-e2e": {
+      "tags": []
+    },
+    "ng-swag-action-tester-e2e": {
+      "tags": []
+    },
+    "ng-swag-action-tester": {
+      "tags": []
+    }
+  }
 }
