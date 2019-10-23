@@ -1,1 +1,1 @@
-export * from './lib/client-actions';
+export * from './lib';

@@ -147,6 +147,31 @@
           }
         }
       }
+    },
+    "client-basic": {
+      "root": "libs/client/basic",
+      "sourceRoot": "libs/client/basic/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/client/basic/tsconfig.lib.json",
+              "libs/client/basic/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/client/basic/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/client/basic/jest.config.js",
+            "tsConfig": "libs/client/basic/tsconfig.spec.json"
+          }
+        }
+      }
     }
   },
   "cli": {

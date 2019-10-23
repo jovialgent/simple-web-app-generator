@@ -22,6 +22,9 @@
     },
     "ng-swag-action-tester": {
       "tags": []
+    },
+    "client-basic": {
+      "tags": []
     }
   }
 }

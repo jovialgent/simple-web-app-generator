@@ -18,6 +18,9 @@
     "paths": {
       "@simple-web-app-generator/client/actions": [
         "libs/client/actions/src/index.ts"
+      ],
+      "@simple-web-app-generator/client/basic": [
+        "libs/client/basic/src/index.ts"
       ]
     }
   },
