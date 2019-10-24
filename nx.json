@@ -8,15 +8,7 @@
     "nx.json": "*"
   },
   "projects": {
-    "client-actions": {
-      "tags": []
-    },
-    "sample-site-action": {
-      "tags": []
-    },
-    "sample-site-action-e2e": {
-      "tags": []
-    },
+    
     "ng-swag-action-tester-e2e": {
       "tags": []
     },
@@ -24,9 +16,6 @@
       "tags": []
     },
     "client-basic": {
-      "tags": []
-    },
-    "instance": {
       "tags": []
     }
   }
