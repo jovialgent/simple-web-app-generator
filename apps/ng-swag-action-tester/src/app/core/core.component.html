@@ -1,1 +1,7 @@
-<p>core works!</p>
+<button (click)="createInstance(config)">Set Random Data</button>
+<div *ngIf="(instance$ | async) as instance">
+    <pre>{{instance | json}}</pre>
+</div>
+<div *ngIf="( actionProcessor$ | async) as actions">
+    <pre>{{actions|json}}</pre>
+</div>
