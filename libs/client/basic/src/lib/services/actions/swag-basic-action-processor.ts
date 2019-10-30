@@ -7,59 +7,73 @@ import {
   combineLatest
 } from 'rxjs';
 import { map, tap, delay } from 'rxjs/operators';
-import { SwagBasicInstanceManager, ISwagBasicInstance } from '../config';
+import { SwagBasicVisitManager, ISwagBasicVisit } from '../config';
 import { last } from 'lodash';
+import { SwagBasicActionSetVisitData } from './swag-basic-action-set-visit-data';
+import {
+  ISwagBasicActionConfig,
+  ISwagBasicActionConfigSetVisitData,
+  ISwagBasicActionConfigCreateVisit
+} from './models';
+import { SwagBasicActionCreateVisit } from './swag-basic-action-create-visit';
 
 export class SwagBasicActionProcessor extends Subject<any> {
   private _subscriber: Subscriber<any>;
-  private _instanceManager: SwagBasicInstanceManager;
+  private _visitManager: SwagBasicVisitManager;
+  private _setVisitDataAction: SwagBasicActionSetVisitData;
+  private _createVisitAction: SwagBasicActionCreateVisit;
   constructor() {
     super();
-    this._instanceManager = new SwagBasicInstanceManager();
+    this._visitManager = new SwagBasicVisitManager();
+    this._setVisitDataAction = new SwagBasicActionSetVisitData();
+    this._createVisitAction = new SwagBasicActionCreateVisit();
   }
 
-  process$(actions): Observable<ISwagBasicInstance> {
-    const actions$: Observable<
-      ISwagBasicInstance
-    >[] = this._getActionObservables$(actions);
+  process$(actions: ISwagBasicActionConfig[]): Observable<ISwagBasicVisit> {
+    const actions$: Observable<ISwagBasicVisit>[] = this._getActionObservables$(
+      actions
+    );
     return combineLatest(actions$).pipe(
       tap(() =>
         this.next({
           processing: true,
           actions,
-          instance: this._instanceManager.getInstance()
+          visit: this._visitManager.getVisit()
         })
       ),
-      map((instances: ISwagBasicInstance[]) => {
-        return last(instances);
+      map((visits: ISwagBasicVisit[]) => {
+        return last(visits);
       }),
-      tap((instance: ISwagBasicInstance) => {
+      tap((visit: ISwagBasicVisit) => {
         this.next({
           processing: false,
           actions,
-          instance: this._instanceManager.getInstance()
+          visit: this._visitManager.getVisit()
         });
       })
     );
   }
 
-  createInstance$(args: any): Observable<ISwagBasicInstance> {
-    return this._instanceManager.createInstance$(args.config);
+  createVisit$(
+    action: ISwagBasicActionConfigCreateVisit
+  ): Observable<ISwagBasicVisit> {
+    return this._createVisitAction.run$(action, this._visitManager);
   }
 
-  setInstanceData$(args: any): Observable<ISwagBasicInstance> {
-    const data = !!args.data ? args.data : {};
-    return of(this._instanceManager.setInstanceData(data));
+  setVisitData$(
+    action: ISwagBasicActionConfigSetVisitData
+  ): Observable<ISwagBasicVisit> {
+    return this._setVisitDataAction.run$(action, this._visitManager);
   }
 
   private _getActionObservables$(
-    actions: { eventName: string; args: any }[]
-  ): Observable<ISwagBasicInstance>[] {
-    return actions.map((action: { eventName: string; args: any }) => {
+    actions: ISwagBasicActionConfig[]
+  ): Observable<ISwagBasicVisit>[] {
+    return actions.map((action: ISwagBasicActionConfig) => {
       const action$ = this[`${action.eventName}$`];
       return !!action$
-        ? this[`${action.eventName}$`](action.args)
-        : of(this._instanceManager.getInstance());
+        ? this[`${action.eventName}$`](action)
+        : of(this._visitManager.getVisit());
     });
   }
 }

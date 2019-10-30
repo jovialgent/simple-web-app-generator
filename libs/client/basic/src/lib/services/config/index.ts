@@ -1,2 +1,2 @@
 export * from "./setup";
-export * from "./swag-basic-instance-manager";
+export * from "./swag-basic-visit-manager";

@@ -1,6 +1,6 @@
-<button (click)="createInstance(config)">Set Random Data</button>
-<div *ngIf="(instance$ | async) as instance">
-    <pre>{{instance | json}}</pre>
+<button (click)="createVisit(config)">Set Random Data</button>
+<div *ngIf="(visit$ | async) as visit">
+    <pre>{{visit | json}}</pre>
 </div>
 <div *ngIf="( actionProcessor$ | async) as actions">
     <pre>{{actions|json}}</pre>
