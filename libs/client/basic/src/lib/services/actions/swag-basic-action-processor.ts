@@ -54,17 +54,30 @@ export class SwagBasicActionProcessor extends Subject<any> {
     );
   }
 
+  //#region Actions
+
+  /**
+   * Creates a visit based on the config passed in
+   * @param action : ISwagBasicActionConfigCreateVisit
+   */
   createVisit$(
     action: ISwagBasicActionConfigCreateVisit
   ): Observable<ISwagBasicVisit> {
     return this._createVisitAction.run$(action, this._visitManager);
   }
 
+  /**
+   * Sets the current local data that doesn't persist after
+   * page load.
+   * @param action - ISwagBasicActionConfigSetVisitData 
+   */
   setVisitData$(
     action: ISwagBasicActionConfigSetVisitData
   ): Observable<ISwagBasicVisit> {
     return this._setVisitDataAction.run$(action, this._visitManager);
   }
+
+  //#endregion Actions
 
   private _getActionObservables$(
     actions: ISwagBasicActionConfig[]
