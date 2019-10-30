@@ -32,8 +32,7 @@ export class CoreComponent implements OnInit {
       eventName: SwagBasicActionConfigEventName.CreateVisit,
       args: {
         config: {
-          id: '123',
-          server:{}
+          id: '123'
         }
       }
     };
