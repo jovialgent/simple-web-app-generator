@@ -5,13 +5,16 @@ import {
   ISwagBasicActionConfig,
   ISwagActionTypeMap
 } from '../../../services/actions/models';
+import { NgSwagBasicRulesService } from '../rules';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NgSwagBasicActionsProcessService {
   private _processor: SwagBasicActionProcessor = new SwagBasicActionProcessor();
-  constructor() {}
+  constructor(private _rules: NgSwagBasicRulesService) {
+    this._processor = new SwagBasicActionProcessor(_rules.getRules());
+  }
 
   process$(actions: ISwagBasicActionConfig[]): Observable<any> {
     return this._processor.process$(actions);

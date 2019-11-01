@@ -3,7 +3,8 @@ import {
   SwagBasicRules,
   ISwagBasicRuleObject,
   ISwagBasicVisit,
-  BasicRuleConditionOperator
+  BasicRuleConditionOperator,
+  ISwagRuleEvaluatorTypeMap
 } from '../../../services';
 import { Observable, of } from 'rxjs';
 
@@ -13,6 +14,12 @@ import { Observable, of } from 'rxjs';
 export class NgSwagBasicRulesService {
   private _swagRuleService = new SwagBasicRules();
   constructor() {}
+
+  addEvaluator(
+    evaluators: ISwagRuleEvaluatorTypeMap
+  ): ISwagRuleEvaluatorTypeMap {
+    return this._swagRuleService.addEvaluator(evaluators);
+  }
 
   evaluateFirst$(
     rules: ISwagBasicRuleObject[],
@@ -26,5 +33,9 @@ export class NgSwagBasicRulesService {
     visit: ISwagBasicVisit
   ): Observable<ISwagBasicRuleObject[]> {
     return this._swagRuleService.evaluateAll$(rules, visit);
+  }
+
+  getRules(): SwagBasicRules {
+    return this._swagRuleService;
   }
 }

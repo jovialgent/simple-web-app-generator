@@ -1,7 +1,7 @@
 import {
   ISwagBasicRuleObject,
   BasicRuleConditionOperator,
-  ISwagRuleEvaluatorMap,
+  ISwagRuleEvaluatorTypeMap,
   ISwagBasicRuleCondition,
   ISwagBasicRule
 } from './models';
@@ -9,11 +9,11 @@ import { ISwagBasicVisit } from '../config';
 import { Observable, of, combineLatest } from 'rxjs';
 import { SwagBasicRuleEvaluator } from './evaluators/swag-basic-rule-evaluator';
 import { SwagRuleEvaluator } from './evaluators';
-import { map, find } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 export class SwagBasicRules {
   private _basicEvaluators = new SwagBasicRuleEvaluator();
-  private _evaluators: ISwagRuleEvaluatorMap = {};
+  private _evaluators: ISwagRuleEvaluatorTypeMap = {};
   private _emptyRule: ISwagBasicRuleObject = {
     rule: {
       conditionOperator: BasicRuleConditionOperator.And,
@@ -21,8 +21,8 @@ export class SwagBasicRules {
     }
   };
 
-  constructor(evaluators?: ISwagRuleEvaluatorMap) {
-    const customEvaluators: ISwagRuleEvaluatorMap = !!evaluators
+  constructor(evaluators?: ISwagRuleEvaluatorTypeMap) {
+    const customEvaluators: ISwagRuleEvaluatorTypeMap = !!evaluators
       ? evaluators
       : {};
 
@@ -123,7 +123,9 @@ export class SwagBasicRules {
     );
   }
 
-  addEvaluator(evaluators: ISwagRuleEvaluatorMap): ISwagRuleEvaluatorMap {
+  addEvaluator(
+    evaluators: ISwagRuleEvaluatorTypeMap
+  ): ISwagRuleEvaluatorTypeMap {
     this._evaluators = { ...this._evaluators, ...evaluators };
 
     return this._evaluators;
@@ -138,6 +140,7 @@ export class SwagBasicRules {
         const evaluator: SwagRuleEvaluator = this._evaluators[
           condition.evaluatorType
         ];
+        console.log(this._evaluators);
         return !!evaluator.evaluate$
           ? evaluator.evaluate$(condition, visit)
           : of(false);
@@ -172,7 +175,7 @@ export class SwagBasicRules {
       ]
         ? this[`${conditionOperator}$`](conditions, visit)
         : of(false);
-        
+
       return evaluateToTrue.pipe(
         map(
           (matches: boolean): ISwagBasicRuleObject => {
