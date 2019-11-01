@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import {
   NgSwagBasicActionsProcessService,
   SwagBasicVisitManager,
-  ISwagBasicVisit
+  ISwagBasicVisit,
+  NgSwagBasicRulesService,
+  BasicRuleConditionOperator
 } from '@simple-web-app-generator/client/basic';
-import { Subject, Observable, pipe } from 'rxjs';
+import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
   SwagBasicActionConfigEventName,
@@ -17,7 +19,11 @@ import {
   styleUrls: ['./core.component.scss']
 })
 export class CoreComponent implements OnInit {
-  constructor(public actionProcessor: NgSwagBasicActionsProcessService) {}
+  public isCreated: boolean = false;
+  constructor(
+    public actionProcessor: NgSwagBasicActionsProcessService,
+    private _rules: NgSwagBasicRulesService
+  ) {}
 
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
   public actionProcessor$: Observable<any>;
@@ -25,10 +31,32 @@ export class CoreComponent implements OnInit {
 
   ngOnInit() {
     this.actionProcessor$ = this.actionProcessor.getProcessor();
+    this.actionProcessor.addActionTypeMap({
+      test: {
+        test1: {
+          run$(action, visitManager) {
+            visitManager.setVisitData({
+              'got to test 1': true
+            });
+
+            return of(visitManager.getVisit());
+          },
+          run(action, visitManager) {
+            return of({
+              id: 'test',
+              data: {},
+              persistent: {},
+              server: {}
+            }).toPromise();
+          }
+        }
+      }
+    });
   }
 
   createVisit(config) {
     const createVisitAction: ISwagBasicActionConfigCreateVisit = {
+      actionType: 'basic',
       eventName: SwagBasicActionConfigEventName.CreateVisit,
       args: {
         config: {
@@ -36,31 +64,54 @@ export class CoreComponent implements OnInit {
         }
       }
     };
+    const createActions = this.isCreated ? [] : [createVisitAction];
 
-    this.actionProcessor.process([createVisitAction]).then(() => {
-      this.actionProcessor.process([
-        {
-          eventName: SwagBasicActionConfigEventName.SetVisitData,
-          args: {
-            data: {
-              test: 1,
-              test2: 2,
-              test3: {
-                test4: {
-                  test5: [
-                    {
-                      test1: true
-                    },
-                    {
-                      test2: false
-                    }
-                  ]
+    this.actionProcessor.process(createActions).then(() => {
+      this.isCreated = true;
+      this.actionProcessor
+        .process([
+          {
+            actionType: 'basic',
+            eventName: SwagBasicActionConfigEventName.SetVisitData,
+            rule: {
+              conditionOperator: BasicRuleConditionOperator.And,
+              conditions: [
+                {
+                  evaluatorType: 'basic',
+                  key: 'id',
+                  is: 'equals',
+                  value: '123'
                 }
+              ]
+            },
+            args: {
+              data: {
+                test: 1
+              }
+            }
+          },
+          {
+            actionType: 'basic',
+            eventName: SwagBasicActionConfigEventName.SetVisitData,
+            rule: {
+              conditionOperator: BasicRuleConditionOperator.And,
+              conditions: [
+                {
+                  evaluatorType: 'basic',
+                  key: 'data.test',
+                  is: 'equals',
+                  value: 1
+                }
+              ]
+            },
+            args: {
+              data: {
+                'after-test': true
               }
             }
           }
-        }
-      ]);
+        ])
+        .then((visit: ISwagBasicVisit) => {});
     });
   }
 }

@@ -1,6 +1,5 @@
-import { Observable } from 'rxjs';
+import {ISwagAction} from "./swag-action.interface";
 
-export interface ISwagBasicAction {
-   run$: (...args:any[]) => Observable<any>;
-   run: (...args:any[]) => Promise<any>;
+export interface ISwagBasicAction extends ISwagAction {
+  
 }

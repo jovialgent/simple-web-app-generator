@@ -1,6 +1,6 @@
-import { ISwagBasicAction, ISwagBasicActionConfigSetVisitData } from './models';
+import { ISwagBasicAction, ISwagBasicActionConfigSetVisitData } from '../models';
 import { Observable, of } from 'rxjs';
-import { SwagBasicVisitManager } from '../config';
+import { SwagBasicVisitManager } from '../../config';
 
 export class SwagBasicActionSetVisitData implements ISwagBasicAction {
   constructor() {}

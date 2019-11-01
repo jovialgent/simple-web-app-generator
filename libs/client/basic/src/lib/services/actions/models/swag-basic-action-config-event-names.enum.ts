@@ -1,4 +1,5 @@
 export enum SwagBasicActionConfigEventName{
     SetVisitData = "setVisitData",
-    CreateVisit = "createVisit"
+    CreateVisit = "createVisit",
+    Basic = 'basic'
 }

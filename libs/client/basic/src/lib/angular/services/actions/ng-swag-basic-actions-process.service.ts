@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { SwagBasicActionProcessor } from '../../../services';
 import { Observable } from 'rxjs';
-import { ISwagBasicActionConfig } from '../../../services/actions/models';
+import {
+  ISwagBasicActionConfig,
+  ISwagActionTypeMap
+} from '../../../services/actions/models';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +17,14 @@ export class NgSwagBasicActionsProcessService {
     return this._processor.process$(actions);
   }
 
-  process(actions : ISwagBasicActionConfig[]): Promise<any> {
+  process(actions: ISwagBasicActionConfig[]): Promise<any> {
     return this._processor.process$(actions).toPromise();
   }
 
   getProcessor(): SwagBasicActionProcessor {
     return this._processor;
+  }
+  addActionTypeMap(actionTypeMap: ISwagActionTypeMap): ISwagActionTypeMap {
+    return this._processor.addActionType(actionTypeMap);
   }
 }

@@ -55,6 +55,12 @@ export class SwagBasicVisitManager extends Subject<{
     );
   }
 
+  public setVisit(visit: ISwagBasicVisit): ISwagBasicVisit {
+    this._visit = { ...visit };
+
+    return visit;
+  }
+
   public setVisitData(data: any): ISwagBasicVisit {
     return this._updateVisit(data, 'data');
   }
@@ -66,15 +72,17 @@ export class SwagBasicVisitManager extends Subject<{
     const oldVisit = { ...this._visit };
     const oldData = { ...oldVisit[type] };
     const newData = merge(oldData, data);
+    const newVisit = { ...oldVisit };
 
-    this._visit[type] = { ...newData };
+    newVisit[type] = { ...newData };
+    this._visit = { ...newVisit };
 
     this.next({
       current: { ...this._visit },
       previous: { ...oldVisit }
     });
 
-    return { ...newData };
+    return { ...this._visit };
   }
 
   private _createVisitId$(config: any): Observable<string> {
