@@ -140,8 +140,8 @@ export class SwagBasicRules {
         const evaluator: SwagRuleEvaluator = this._evaluators[
           condition.evaluatorType
         ];
-        console.log(this._evaluators);
-        return !!evaluator.evaluate$
+
+        return !!evaluator && !!evaluator.evaluate$
           ? evaluator.evaluate$(condition, visit)
           : of(false);
       }

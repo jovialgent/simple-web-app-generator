@@ -9,25 +9,12 @@ import {
   ISwagBasicRuleCondition
 } from '@simple-web-app-generator/client/basic';
 import { Subject, Observable, pipe, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, delay } from 'rxjs/operators';
 import {
   SwagBasicActionConfigEventName,
   ISwagBasicActionConfigCreateVisit
 } from 'libs/client/basic/src/lib/services/actions/models';
-
-class MyEvaluator extends SwagRuleEvaluator {
-  constructor(){
-    super();
-    this.evaluatorMap = {
-      trying : {
-        evaluate$(condition: ISwagBasicRuleCondition, visit : ISwagBasicVisit) : Observable<boolean>{
-          console.log("GOT HERE");
-          return of(true)
-        }
-      }
-    }
-  }
-}
+import { ISwagRuleEvaluatorMap } from 'libs/client/basic/src/lib/services/rules/evaluators/models/swag-rule-evaluator-map.interface';
 
 @Component({
   selector: 'ng-swag-action-tester-core',
@@ -46,12 +33,6 @@ export class CoreComponent implements OnInit {
   public config: any;
 
   ngOnInit() {
-    const myEvaluator: SwagRuleEvaluator = new MyEvaluator();
-    const myEvaluators = this._rules.addEvaluator({
-      test: myEvaluator
-    });
-
-    console.log(myEvaluators);
     this.actionProcessor$ = this.actionProcessor.getProcessor();
     this.actionProcessor.addActionTypeMap({
       test: {
@@ -103,12 +84,6 @@ export class CoreComponent implements OnInit {
                   key: 'id',
                   is: 'equals',
                   value: '123'
-                },
-                {
-                  evaluatorType: 'test',
-                  key:'test',
-                  is:'trying',
-                  value:123
                 }
               ]
             },
