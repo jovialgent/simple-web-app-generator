@@ -2,7 +2,6 @@ import { ISwagBasicVisit } from './models';
 import { tap, mergeMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, Subject } from 'rxjs';
 import { uniqueId, merge } from 'lodash';
-import { ISwagBasicConfigVisitServer } from '../models';
 
 export class SwagBasicVisitManager extends Subject<{
   current: ISwagBasicVisit;
@@ -96,7 +95,7 @@ export class SwagBasicVisitManager extends Subject<{
     return of({});
   }
   private _createServerData(
-    configServer: ISwagBasicConfigVisitServer,
+    configServer: any,
     id: string
   ): Observable<any> {
     return of({});

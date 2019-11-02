@@ -1,7 +1,7 @@
 import { ISwagRuleEvaluator } from './swag-rule-evaluator.interface';
 import { ISwagBasicRuleObject, ISwagBasicRuleCondition } from '../../models';
 import { Observable, of } from 'rxjs';
-import { ISwagBasicConfigVisit } from '../../../config/models';
+import { ISwagAppClientVisit } from '../../../config/models';
 import { ISwagRuleEvaluatorMap } from './swag-rule-evaluator-map.interface';
 
 export class SwagRuleEvaluator implements ISwagRuleEvaluator {
@@ -9,7 +9,7 @@ export class SwagRuleEvaluator implements ISwagRuleEvaluator {
 
   evaluate$(
     condition: ISwagBasicRuleCondition,
-    visit: ISwagBasicConfigVisit
+    visit: ISwagAppClientVisit
   ): Observable<boolean> {
     const evaluator = this.evaluatorMap[`${condition.is}$`];
 
