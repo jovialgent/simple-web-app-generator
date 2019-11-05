@@ -1,4 +1,4 @@
-import { ISwagBasicVisit } from './models';
+import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
 import { tap, mergeMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, Subject } from 'rxjs';
 import { uniqueId, merge } from 'lodash';
@@ -23,7 +23,7 @@ export class SwagBasicVisitManager extends Subject<{
     return { ...this._visit };
   }
 
-  private _createVisitFromConfig$(config: any): Observable<ISwagBasicVisit> {
+  private _createVisitFromConfig$(config: ISwagBasicVisitManagerConfig): Observable<ISwagBasicVisit> {
     const id$: Observable<string> = this._createVisitId$(config);
 
     return id$.pipe(

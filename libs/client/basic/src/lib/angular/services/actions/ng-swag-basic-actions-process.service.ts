@@ -6,14 +6,18 @@ import {
   ISwagActionTypeMap
 } from '../../../services/actions/models';
 import { NgSwagBasicRulesService } from '../rules';
+import { cloneDeep } from 'lodash';
+import { NgSwagBasicClientManagerService } from '../client';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NgSwagBasicActionsProcessService {
   private _processor: SwagBasicActionProcessor = new SwagBasicActionProcessor();
-  constructor(private _rules: NgSwagBasicRulesService) {
-    this._processor = new SwagBasicActionProcessor(_rules.getRules());
+  constructor(private _appManager: NgSwagBasicClientManagerService) {
+    this._processor = new SwagBasicActionProcessor(
+      _appManager.getClientManager()
+    );
   }
 
   process$(actions: ISwagBasicActionConfig[]): Observable<any> {
@@ -27,6 +31,17 @@ export class NgSwagBasicActionsProcessService {
   getProcessor(): SwagBasicActionProcessor {
     return this._processor;
   }
+
+  setProcessor(
+    newProcessor: SwagBasicActionProcessor
+  ): { old: SwagBasicActionProcessor; new: SwagBasicActionProcessor } {
+    const oldProcessor: SwagBasicActionProcessor = cloneDeep(this._processor);
+
+    this._processor = newProcessor;
+
+    return { old: oldProcessor, new: newProcessor };
+  }
+
   addActionTypeMap(actionTypeMap: ISwagActionTypeMap): ISwagActionTypeMap {
     return this._processor.addActionType(actionTypeMap);
   }

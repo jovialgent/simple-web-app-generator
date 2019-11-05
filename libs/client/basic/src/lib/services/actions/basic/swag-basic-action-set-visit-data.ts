@@ -1,24 +1,27 @@
-import { ISwagBasicAction, ISwagBasicActionConfigSetVisitData } from '../models';
+import {
+  ISwagBasicAction,
+  ISwagBasicActionConfigSetVisitData
+} from '../models';
 import { Observable, of } from 'rxjs';
-import { SwagBasicVisitManager } from '../../config';
+import { SwagBasicClientManager } from '../../client';
 
 export class SwagBasicActionSetVisitData implements ISwagBasicAction {
   constructor() {}
 
   run$(
     action: ISwagBasicActionConfigSetVisitData,
-    visitManager: SwagBasicVisitManager
+    app: SwagBasicClientManager
   ): Observable<any> {
     const data =
       !!action && !!action.args && !!action.args.data ? action.args.data : {};
 
-    return of(visitManager.setVisitData(data));
+    return of(app.getVisitManager().setVisitData(data));
   }
 
   run(
     action: ISwagBasicActionConfigSetVisitData,
-    visitManager: SwagBasicVisitManager
+    app: SwagBasicClientManager
   ): Promise<any> {
-    return this.run$(action, visitManager).toPromise();
+    return this.run$(action, app).toPromise();
   }
 }

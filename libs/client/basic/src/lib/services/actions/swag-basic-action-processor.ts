@@ -10,28 +10,21 @@ import {
   SwagBasicActionConfigEventName,
   ISwagActionTypeMap
 } from './models';
-import { SwagBasicActionCreateVisit } from './basic/swag-basic-action-create-visit';
 import { basicActionMap } from './basic';
-import { SwagRuleEvaluator, SwagBasicRules } from '../rules';
+import { SwagBasicClientManager } from '../client';
 
 export class SwagBasicActionProcessor extends Subject<any> {
   public actionTypeMap: ISwagActionTypeMap = {};
-  private _subscriber: Subscriber<any>;
-  private _visitManager: SwagBasicVisitManager;
+  private _appManager: SwagBasicClientManager;
   private _emptySwagAction: ISwagAction = {
-    run$: (
-      action: ISwagBasicActionConfig,
-      visitManager: SwagBasicVisitManager
-    ) => of(visitManager.getVisit()),
-    run: (
-      action: ISwagBasicActionConfig,
-      visitManager: SwagBasicVisitManager
-    ) => of(visitManager.getVisit()).toPromise()
+    run$: (action: ISwagBasicActionConfig, app: SwagBasicClientManager) =>
+      of(app.getVisit()),
+    run: (action: ISwagBasicActionConfig, app: SwagBasicClientManager) =>
+      of(app.getVisit()).toPromise()
   };
-  private _ruleEvaluator: SwagBasicRules;
 
   constructor(
-    ruleEvaluator?: SwagBasicRules,
+    appManager?: SwagBasicClientManager,
     actionTypeMap?: ISwagActionTypeMap
   ) {
     super();
@@ -40,10 +33,7 @@ export class SwagBasicActionProcessor extends Subject<any> {
       [SwagBasicActionConfigEventName.Basic]: basicActionMap,
       ...actionTypeMap
     };
-    this._visitManager = new SwagBasicVisitManager();
-    this._ruleEvaluator = !!ruleEvaluator
-      ? ruleEvaluator
-      : new SwagBasicRules();
+    this._appManager = !!appManager ? appManager : new SwagBasicClientManager();
   }
 
   addActionType(actionTypeMap: ISwagActionTypeMap): ISwagActionTypeMap {
@@ -59,25 +49,37 @@ export class SwagBasicActionProcessor extends Subject<any> {
     this.next({
       processing: true,
       actions,
-      visit: this._visitManager.getVisit()
+      visit: this._appManager.getVisit()
     });
 
-    return this._ruleEvaluator
-      .evaluateAll$(actions, this._visitManager.getVisit())
+    if (!actions || !actions.length) {
+      this.next({
+        processing: false,
+        actions,
+        visit: this._appManager.getVisit()
+      });
+
+      return of(this._appManager.getVisit());
+    }
+
+    return this._appManager.getRules()
+      .evaluateAll$(actions, this._appManager.getVisit())
       .pipe(
-        map((filteredActions: ISwagBasicActionConfig[]) =>
+        map((filteredActions: ISwagBasicActionConfig[]): Observable<
+          ISwagBasicVisit
+        >[] =>
           this._getActionObservables$(<ISwagBasicActionConfig[]>filteredActions)
         ),
         mergeMap(actions$ => combineLatest(actions$)),
         map((visits: ISwagBasicVisit[]) => last(visits)),
         tap((visit: ISwagBasicVisit) => {
-          this._visitManager.setVisit(visit);
+          this._appManager.setVisit(visit);
         }),
         tap((visit: ISwagBasicVisit) =>
           this.next({
             processing: false,
             actions,
-            visit: this._visitManager.getVisit()
+            visit: this._appManager.getVisit()
           })
         )
       );
@@ -92,7 +94,7 @@ export class SwagBasicActionProcessor extends Subject<any> {
         !!actionType && !!actionType[`${action.eventName}`]
           ? actionType[`${action.eventName}`]
           : this._emptySwagAction;
-      return swagAction.run$(action, this._visitManager);
+      return swagAction.run$(action, this._appManager);
     });
   }
 }

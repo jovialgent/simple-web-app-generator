@@ -7,6 +7,7 @@ import {
   ISwagRuleEvaluatorTypeMap
 } from '../../../services';
 import { Observable, of } from 'rxjs';
+import { cloneDeep } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +38,15 @@ export class NgSwagBasicRulesService {
 
   getRules(): SwagBasicRules {
     return this._swagRuleService;
+  }
+
+  setRules(
+    newRules: SwagBasicRules
+  ): { old: SwagBasicRules; new: SwagBasicRules } {
+    const oldRules: SwagBasicRules = cloneDeep(this._swagRuleService);
+
+    this._swagRuleService = newRules;
+
+    return { old: oldRules, new: newRules };
   }
 }
