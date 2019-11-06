@@ -1,5 +1,6 @@
-export interface ISwagBasicVisitManagerConfig{
-    server:any;
-    persistent:any;
-    data:any;
+export interface ISwagBasicVisitManagerConfig {
+  id?: string;
+  server?: any;
+  persistent?: any;
+  data?: any;
 }

@@ -2,6 +2,7 @@ import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
 import { tap, mergeMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, Subject } from 'rxjs';
 import { uniqueId, merge } from 'lodash';
+import { ISwagAppClientVisitServer } from '../models';
 
 export class SwagBasicVisitManager extends Subject<{
   current: ISwagBasicVisit;
@@ -13,8 +14,13 @@ export class SwagBasicVisitManager extends Subject<{
     super();
   }
 
-  public createVisit$(config?: any): Observable<ISwagBasicVisit> {
-    return this._createVisitFromConfig$(config).pipe(
+  public createVisit$(
+    config?: ISwagBasicVisitManagerConfig
+  ): Observable<ISwagBasicVisit> {
+    const mappedConfig: ISwagBasicVisitManagerConfig = this._getDefaultConfig(
+      config
+    );
+    return this._createVisitFromConfig$(mappedConfig).pipe(
       tap((visit: ISwagBasicVisit) => (this._visit = visit))
     );
   }
@@ -23,21 +29,33 @@ export class SwagBasicVisitManager extends Subject<{
     return { ...this._visit };
   }
 
-  private _createVisitFromConfig$(config: ISwagBasicVisitManagerConfig): Observable<ISwagBasicVisit> {
-    const id$: Observable<string> = this._createVisitId$(config);
+  private _getDefaultConfig(
+    config?: ISwagBasicVisitManagerConfig
+  ): ISwagBasicVisitManagerConfig {
+    const emptyConfig: ISwagBasicVisitManagerConfig = {};
+
+    return !!config ? config : emptyConfig;
+  }
+
+  private _createVisitFromConfig$(
+    config: ISwagBasicVisitManagerConfig
+  ): Observable<ISwagBasicVisit> {
+    const id$: Observable<string> = this._createVisitId$(config.id);
 
     return id$.pipe(
       mergeMap((id: string) =>
         combineLatest([
           of(id),
-          this._createPersistentData(config, id),
-          this._createVisitData(config, id),
-          this._createServerData(config.server, id)
+          this._createPersistentData(config.persistent, id),
+          this._createVisitData(config.data, id),
+          this._createServerData(config.server, id),
+          this._createVisitor(config.server, id)
         ])
       ),
       map(
-        ([id, persistent, data, server]: [
+        ([id, persistent, data, server, visitor]: [
           string,
+          any,
           any,
           any,
           any
@@ -46,7 +64,8 @@ export class SwagBasicVisitManager extends Subject<{
             id,
             persistent,
             data,
-            server
+            server,
+            visitor
           };
         }
       ),
@@ -84,8 +103,8 @@ export class SwagBasicVisitManager extends Subject<{
     return { ...this._visit };
   }
 
-  private _createVisitId$(config: any): Observable<string> {
-    return !!config.id ? of(config.id) : of(uniqueId('swag-'));
+  private _createVisitId$(id: string): Observable<string> {
+    return !!id ? of(id) : of(uniqueId('swag-'));
   }
 
   private _createPersistentData(config: any, id: string): Observable<any> {
@@ -94,10 +113,15 @@ export class SwagBasicVisitManager extends Subject<{
   private _createVisitData(config: any, id: string): Observable<any> {
     return of({});
   }
-  private _createServerData(
-    configServer: any,
-    id: string
-  ): Observable<any> {
+  private _createServerData(configServer: any, id: string): Observable<ISwagAppClientVisitServer> {
+    return of({
+      paths:[],
+      root:"",
+      data:{},
+      defaultHeaders:{}
+    });
+  }
+  private _createVisitor(configServer: any, id: string): Observable<any> {
     return of({});
   }
 }

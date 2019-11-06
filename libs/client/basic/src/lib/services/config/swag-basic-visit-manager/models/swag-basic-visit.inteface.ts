@@ -1,8 +1,5 @@
-import { Observable } from 'rxjs';
+import { ISwagAppClientVisit } from '../../models';
 
-export interface ISwagBasicVisit {
-  id: string;
-  persistent: any;
-  data: any;
-  server: any;
+export interface ISwagBasicVisit extends ISwagAppClientVisit {
+ 
 }

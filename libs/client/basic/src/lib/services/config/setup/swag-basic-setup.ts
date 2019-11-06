@@ -4,7 +4,6 @@ import {
   ISwagAppClient,
   ISwagAppServer,
   ISwagAppClientSite,
-  ISwagAppClientVisitor,
   ISwagAppClientVisit
 } from '../models';
 import { ISwagBasicSetupConfig } from './models';
@@ -27,23 +26,18 @@ export class SwagBasicSetup {
 
   public getClient$(config: ISwagBasicSetupConfig): Observable<ISwagAppClient> {
     const site$: Observable<ISwagAppClientSite> = this.getClientSite$(config);
-    const visitor$: Observable<ISwagAppClientVisitor> = this.getClientVisitor$(
-      config
-    );
     const visit$: Observable<ISwagAppClientVisit> = this.getClientVisit$(
       config
     );
 
-    return combineLatest([site$, visitor$, visit$]).pipe(
+    return combineLatest([site$, visit$]).pipe(
       map(
-        ([site, visitor, visit]: [
+        ([site, visit]: [
           ISwagAppClientSite,
-          ISwagAppClientVisitor,
           ISwagAppClientVisit
         ]) => {
           return {
             site,
-            visitor,
             visit
           };
         }
@@ -57,15 +51,10 @@ export class SwagBasicSetup {
     return of({});
   }
 
-  public getClientVisitor$(
-    config: ISwagBasicSetupConfig
-  ): Observable<ISwagAppClientVisitor> {
-    return of({});
-  }
 
   public getClientVisit$(
     config: ISwagBasicSetupConfig
-  ): Observable<ISwagAppClientVisitor> {
+  ): Observable<ISwagAppClientVisit> {
     return config.services.visit.manager.createVisit$(
       config.services.visit.config
     );
