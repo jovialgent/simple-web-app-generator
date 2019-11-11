@@ -1,17 +1,26 @@
 import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
 import { tap, mergeMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, Subject } from 'rxjs';
-import { uniqueId, merge } from 'lodash';
+import { uniqueId, merge, get, set } from 'lodash';
 import { ISwagAppClientVisitServer } from '../models';
+import {
+  SwagBasicServerManager,
+  ISwagBasicServerManagerPathsVisit,
+  SwagBasicServerManagerUtils,
+  ISwagBasicServerManagerPathVisit
+} from '../../server';
 
 export class SwagBasicVisitManager extends Subject<{
   current: ISwagBasicVisit;
   previous: ISwagBasicVisit;
 }> {
   private _visit: ISwagBasicVisit;
+  private _serverManager: SwagBasicServerManager;
 
   constructor() {
     super();
+
+    this._serverManager = new SwagBasicServerManager();
   }
 
   public createVisit$(
@@ -83,16 +92,36 @@ export class SwagBasicVisitManager extends Subject<{
     return this._updateVisit(data, 'data');
   }
 
+  public setVisitServerData(
+    data: any,
+    query?: string
+  ): Observable<ISwagBasicVisit> {
+    const serverVisit: ISwagAppClientVisitServer = this._getServerVisit();
+    const runPath: ISwagBasicServerManagerPathVisit = {
+      ...serverVisit.paths.update.run,
+      query
+    };
+    const path = SwagBasicServerManagerUtils.createFullPath(
+      serverVisit.paths.update.root,
+      runPath
+    );
+
+    return SwagBasicServerManagerUtils.post$(path, data).pipe(
+      map((resData: any) => this._updateVisit(resData, 'server.data'))
+    );
+  }
+
   private _updateVisit(
     data: any,
-    type: 'data' | 'persistent' | 'server'
+    type: 'data' | 'persistent' | 'server.data'
   ): ISwagBasicVisit {
     const oldVisit = { ...this._visit };
-    const oldData = { ...oldVisit[type] };
+    const oldData = { ...get(oldVisit, type) };
     const newData = merge(oldData, data);
     const newVisit = { ...oldVisit };
 
-    newVisit[type] = { ...newData };
+    set(newVisit, type, newData);
+
     this._visit = { ...newVisit };
 
     this.next({
@@ -113,15 +142,38 @@ export class SwagBasicVisitManager extends Subject<{
   private _createVisitData(config: any, id: string): Observable<any> {
     return of({});
   }
-  private _createServerData(configServer: any, id: string): Observable<ISwagAppClientVisitServer> {
-    return of({
-      paths:[],
-      root:"",
-      data:{},
-      defaultHeaders:{}
-    });
+  private _createServerData(
+    configServer: ISwagBasicServerManagerPathsVisit,
+    id: string
+  ): Observable<ISwagAppClientVisitServer> {
+    return this._serverManager.setUpVisit$(configServer, id);
   }
   private _createVisitor(configServer: any, id: string): Observable<any> {
     return of({});
+  }
+
+  private _getServerVisit(): ISwagAppClientVisitServer {
+    const server =
+      !!this._visit && !!this._visit.server
+        ? this._visit.server
+        : this._getEmptyServerVisit();
+
+    return server;
+  }
+
+  private _getEmptyServerVisit(): ISwagAppClientVisitServer {
+    return {
+      paths: {
+        update: {
+          root: '',
+          run: {
+            path: '',
+            requiredHeaders: {},
+            protectedPath: false
+          }
+        }
+      },
+      data: {}
+    };
   }
 }

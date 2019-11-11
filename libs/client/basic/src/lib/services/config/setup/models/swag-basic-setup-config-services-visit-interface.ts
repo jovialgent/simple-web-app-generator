@@ -4,6 +4,6 @@ import {
 } from '../../swag-basic-visit-manager';
 
 export interface ISwagBasicSetupConfigServicesVisit {
-  manager: SwagBasicVisitManager;
+  manager?: SwagBasicVisitManager;
   config: ISwagBasicVisitManagerConfig;
 }

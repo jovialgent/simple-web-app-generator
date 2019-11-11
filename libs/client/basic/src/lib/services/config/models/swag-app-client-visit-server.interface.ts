@@ -1,8 +1,8 @@
-import { ISwagBasicServerManagerPathsType } from '../../server';
+import {
+  ISwagBasicServerManagerPathsVisit
+} from '../../server';
 
 export interface ISwagAppClientVisitServer {
-  paths: ISwagBasicServerManagerPathsType[];
-  root: string;
+  paths: ISwagBasicServerManagerPathsVisit;
   data: any;
-  defaultHeaders: any;
 }

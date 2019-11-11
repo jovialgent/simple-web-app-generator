@@ -1,5 +1,6 @@
 export interface ISwagBasicServerManagerPathType {
   path: string;
-  requiredHeaders: {};
-  protected: boolean;
+  query? : string;
+  requiredHeaders: any;
+  protectedPath: boolean;
 }

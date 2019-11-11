@@ -4,7 +4,9 @@ import {
   ISwagApp,
   SwagBasicVisitManager,
   ISwagBasicVisit,
-  ISwagBasicSetupConfig
+  ISwagBasicSetupConfig,
+  ISwagAppClient,
+  ISwagAppServer
 } from '../config';
 import { ISwagBasicClientDefault } from './models';
 import { Observable } from 'rxjs';
@@ -22,27 +24,13 @@ export class SwagBasicClientManager {
     this._visit = new SwagBasicVisitManager();
   }
 
-  public setUpApp$(config: ISwagBasicClientDefault): Observable<ISwagApp> {
-    this._setupConfig = {
-      services: {
-        visit: {
-          manager: this.getVisitManager(),
-          config: {
-            server: {},
-            data: {},
-            persistent: {}
-          }
-        },
-        rules: {
-          manager: this.getRules(),
-          config: {
-            rulesTypeMap: {}
-          }
-        }
-      }
-    };
+  public setUpApp$(config: ISwagBasicSetupConfig): Observable<ISwagApp> {
 
-    return this._setup.setUpApp$(this._setupConfig);
+    const updatedConfig: ISwagBasicSetupConfig = { ...config };
+
+    updatedConfig.services.visit.manager = this.getVisitManager();
+    updatedConfig.services.rules.manager = this.getRules();
+    return this._setup.setUpApp$(config);
   }
 
   public getRules(): SwagBasicRules {

@@ -1,6 +1,8 @@
+import { ISwagBasicServerManagerPathsVisit } from '../../../server';
+
 export interface ISwagBasicVisitManagerConfig {
   id?: string;
-  server?: any;
+  server?: ISwagBasicServerManagerPathsVisit;
   persistent?: any;
   data?: any;
 }

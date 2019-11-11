@@ -147,6 +147,60 @@
           }
         }
       }
+    },
+    "swag-server": {
+      "root": "apps/swag-server",
+      "sourceRoot": "apps/swag-server/src",
+      "projectType": "application",
+      "prefix": "swag-server",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "options": {
+            "outputPath": "dist/apps/swag-server",
+            "main": "apps/swag-server/src/main.ts",
+            "tsConfig": "apps/swag-server/tsconfig.app.json",
+            "assets": ["apps/swag-server/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/swag-server/src/environments/environment.ts",
+                  "with": "apps/swag-server/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "swag-server:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/swag-server/tsconfig.app.json",
+              "apps/swag-server/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/swag-server/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/swag-server/jest.config.js",
+            "tsConfig": "apps/swag-server/tsconfig.spec.json"
+          }
+        }
+      }
     }
   },
   "cli": {
@@ -160,5 +214,6 @@
     "@nrwl/angular:library": {
       "unitTestRunner": "jest"
     }
-  }
+  },
+  "defaultProject": "swag-server"
 }

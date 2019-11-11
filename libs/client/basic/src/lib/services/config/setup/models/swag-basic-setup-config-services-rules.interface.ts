@@ -1,6 +1,6 @@
 import { SwagBasicRules, ISwagBasicRuleConfig } from '../../../rules';
 
 export interface ISwagBasicSetupConfigServicesRules {
-  manager: SwagBasicRules;
+  manager?: SwagBasicRules;
   config: ISwagBasicRuleConfig;
 }

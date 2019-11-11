@@ -1,19 +1,19 @@
-import { Observable, of } from 'rxjs';
+import { ISwagBasicServerManagerPathsVisit } from '../../models';
 import { ISwagAppClientVisitServer } from '../../../config';
-import { ISwagBasicServerManagerPathsType } from '../../models';
+import { Observable } from 'rxjs';
+import { SwagBasicServerVisitManagerSetup } from './swag-basic-server-visit-manager-setup';
 
 export class SwagBasicServerVisitManager {
-  run$(): Observable<ISwagAppClientVisitServer> {
-    const paths: ISwagBasicServerManagerPathsType[] = [];
-    const root: string = '';
-    const data: any = {};
-    const defaultHeaders: any = {};
-    
-    return of({
-      paths,
-      root,
-      data,
-      defaultHeaders
-    });
+  private _setUpManager: SwagBasicServerVisitManagerSetup;
+
+  constructor() {
+    this._setUpManager = new SwagBasicServerVisitManagerSetup();
+  }
+
+  setup$(
+    managerInfo: ISwagBasicServerManagerPathsVisit,
+    visitId: string
+  ): Observable<ISwagAppClientVisitServer> {
+    return this._setUpManager.run$(managerInfo, visitId);
   }
 }

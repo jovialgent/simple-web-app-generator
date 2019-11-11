@@ -1,7 +1,7 @@
-import { ISwagBasicServerManagerPathsType } from './swag-basic-server-manager-paths-type.inteface';
-import { ISwagBasicServerManagerPathVisit } from './swag-basic-server-manager-path-visit.interface';
+import { ISwagBasicServerManagerPathsVisitUpdate } from './swag-basic-server-manager-paths-visit-update.interface';
+import { ISwagBasicServerManagerPathsVisitSetUp } from './swag-basic-server-manager-paths-visit-set-up.interface';
 
-export interface ISwagBasicServerManagerPathsVisit
-  extends ISwagBasicServerManagerPathsType {
-      setUp: ISwagBasicServerManagerPathVisit[];
-  }
+export interface ISwagBasicServerManagerPathsVisit {
+  setUp?: ISwagBasicServerManagerPathsVisitSetUp;
+  update: ISwagBasicServerManagerPathsVisitUpdate;
+}
