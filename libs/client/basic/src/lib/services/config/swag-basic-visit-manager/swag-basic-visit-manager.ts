@@ -26,6 +26,7 @@ export class SwagBasicVisitManager extends Subject<{
   public createVisit$(
     config?: ISwagBasicVisitManagerConfig
   ): Observable<ISwagBasicVisit> {
+    console.log(config);
     const mappedConfig: ISwagBasicVisitManagerConfig = this._getDefaultConfig(
       config
     );
@@ -137,10 +138,12 @@ export class SwagBasicVisitManager extends Subject<{
   }
 
   private _createPersistentData(config: any, id: string): Observable<any> {
+    const oldData : any = localStorage[id] ? JSON.parse(localStorage[id]) : {}; 
+        
     return of({});
   }
-  private _createVisitData(config: any, id: string): Observable<any> {
-    return of({});
+  private _createVisitData(data: any, id: string): Observable<any> {
+    return of(data);
   }
   private _createServerData(
     configServer: ISwagBasicServerManagerPathsVisit,

@@ -84,14 +84,21 @@ export class SwagBasicServerVisitManagerSetup {
   }
 
   private _getServerData(
-    setUp: ISwagBasicServerManagerPathsVisitSetUp
+    setUp: ISwagBasicServerManagerPathsVisitSetUp,
+    visitId: string
   ): Observable<any> {
     const path = SwagBasicServerManagerUtils.createFullPath(
       setUp.root,
       setUp.data
     );
+    const hasQueryPath: boolean = path.indexOf('?') >= 0;
+    const queryPath: string = SwagBasicServerManagerUtils.getQueryStringFromObject(
+      { visitId },
+      hasQueryPath
+    );
+    const idPath: string = `${path}${queryPath}`;
 
-    return SwagBasicServerManagerUtils.get$<any>(path);
+    return SwagBasicServerManagerUtils.get$<any>(idPath);
   }
 
   private _getEmptyUpdate(): ISwagBasicServerManagerPathsVisitUpdate {

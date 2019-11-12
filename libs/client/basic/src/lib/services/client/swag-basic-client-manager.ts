@@ -30,6 +30,7 @@ export class SwagBasicClientManager {
 
     updatedConfig.services.visit.manager = this.getVisitManager();
     updatedConfig.services.rules.manager = this.getRules();
+    
     return this._setup.setUpApp$(config);
   }
 

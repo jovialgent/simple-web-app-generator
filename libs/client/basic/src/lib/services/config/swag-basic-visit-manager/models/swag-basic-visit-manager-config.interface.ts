@@ -1,8 +1,9 @@
 import { ISwagBasicServerManagerPathsVisit } from '../../../server';
+import { ISwagAppClientVisitPersistent } from '../../models';
 
 export interface ISwagBasicVisitManagerConfig {
   id?: string;
   server?: ISwagBasicServerManagerPathsVisit;
-  persistent?: any;
+  persistent?: ISwagAppClientVisitPersistent;
   data?: any;
 }

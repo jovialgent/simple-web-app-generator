@@ -1,3 +1,6 @@
-export interface ISwagAppClientVisitPersistent{
-    [propName: string] : any;
+export interface ISwagAppClientVisitPersistent {
+  persist?: boolean;
+  data?: any;
+  source?: 'local' | 'session';
+  [propName: string]: any;
 }
