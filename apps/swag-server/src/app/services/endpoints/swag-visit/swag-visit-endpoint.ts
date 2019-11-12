@@ -1,5 +1,6 @@
 import { SwagVisitEndpointSettings } from './models';
 import { Application, Response, Request } from 'express';
+import { merge } from 'lodash';
 
 let sampleVisitData = {
   test: true,
@@ -9,11 +10,9 @@ let sampleVisitData = {
 export class SwagVisitEndpoint {
   createEndpoint(app: Application): void {
     app.post(SwagVisitEndpointSettings.Endpoint, (req, res) => {
-      console.log('POSTING');
       this.post(req, res);
     });
     app.get(SwagVisitEndpointSettings.Endpoint, (req, res) => {
-      console.log('GETTING');
       this.get(req, res);
     });
   }
@@ -23,9 +22,7 @@ export class SwagVisitEndpoint {
   }
 
   post(req: Request, res: Response) {
-    sampleVisitData = { ...sampleVisitData, ...req.body };
-
-    console.log(sampleVisitData, req.body);
+    sampleVisitData = merge(sampleVisitData, req.body);
 
     res.json(sampleVisitData);
   }

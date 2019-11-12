@@ -16,8 +16,11 @@ export class SwagBasicServerVisitManagerSetup {
   ): Observable<ISwagAppClientVisitServer> {
     const paths$: Observable<
       ISwagBasicServerManagerPathsVisit
-    > = this._getPaths(managerInfo);
-    const data$: Observable<any> = this._getServerData(managerInfo.setUp);
+    > = this._getPaths(managerInfo, visitId);
+    const data$: Observable<any> = this._getServerData(
+      managerInfo.setUp,
+      visitId
+    );
     const defaultHeaders: any = {};
 
     return combineLatest([paths$, data$]).pipe(
@@ -36,7 +39,8 @@ export class SwagBasicServerVisitManagerSetup {
   }
 
   private _getPaths(
-    paths: ISwagBasicServerManagerPathsVisit
+    paths: ISwagBasicServerManagerPathsVisit,
+    visitId: string
   ): Observable<ISwagBasicServerManagerPathsVisit> {
     const setUp: ISwagBasicServerManagerPathsVisitSetUp = paths.setUp;
     const hasSetupRoute = !!setUp.update;
@@ -45,21 +49,27 @@ export class SwagBasicServerVisitManagerSetup {
       update: this._getEmptyUpdate()
     });
 
-    return hasSetupRoute ? this._getPathsUpdate(setUp) : defaultPaths$;
+    return hasSetupRoute ? this._getPathsUpdate(setUp, visitId) : defaultPaths$;
   }
 
   private _getPathsUpdate(
-    setUp: ISwagBasicServerManagerPathsVisitSetUp
+    setUp: ISwagBasicServerManagerPathsVisitSetUp,
+    visitId: string
   ): Observable<ISwagBasicServerManagerPathsVisit> {
     const path = SwagBasicServerManagerUtils.createFullPath(
       setUp.root,
-      setUp.update,
+      setUp.update
     );
+    const hasQueryPath: boolean = path.indexOf('?') >= 0;
+    const queryPath: string = SwagBasicServerManagerUtils.getQueryStringFromObject(
+      { visitId },
+      hasQueryPath
+    );
+    const idPath: string = `${path}${queryPath}`;
 
-    // return of({ setUp, update: this._getEmptyUpdate() });
     return SwagBasicServerManagerUtils.get$<
       ISwagBasicServerManagerPathsVisitUpdate
-    >(path).pipe(
+    >(idPath).pipe(
       map(
         (
           update: ISwagBasicServerManagerPathsVisitSetUp
@@ -78,7 +88,7 @@ export class SwagBasicServerVisitManagerSetup {
   ): Observable<any> {
     const path = SwagBasicServerManagerUtils.createFullPath(
       setUp.root,
-      setUp.data,
+      setUp.data
     );
 
     return SwagBasicServerManagerUtils.get$<any>(path);

@@ -133,7 +133,7 @@ export class SwagBasicVisitManager extends Subject<{
   }
 
   private _createVisitId$(id: string): Observable<string> {
-    return !!id ? of(id) : of(uniqueId('swag-'));
+    return !!id ? of(id) : of(this._sampleId());
   }
 
   private _createPersistentData(config: any, id: string): Observable<any> {
@@ -159,6 +159,15 @@ export class SwagBasicVisitManager extends Subject<{
         : this._getEmptyServerVisit();
 
     return server;
+  }
+
+  private _sampleId(): string {
+    const randomId = (Math.random() * 10000000000000)
+      .toString(36)
+      .substring(0, 11)
+      .replace('.', '');
+
+    return `swag-${randomId}`;
   }
 
   private _getEmptyServerVisit(): ISwagAppClientVisitServer {

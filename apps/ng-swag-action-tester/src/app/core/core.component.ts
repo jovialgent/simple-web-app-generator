@@ -42,8 +42,9 @@ export class CoreComponent implements OnInit {
       args: {
         data: {
           fromClient: 'this came from data',
+          randomData: Math.floor(Math.random() * 100)
         },
-        query: "?test=true"
+        query: '?test=true'
       }
     };
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
@@ -55,6 +56,5 @@ export class CoreComponent implements OnInit {
     this.actionProcessor.process([action]).then(data => {
       console.log(data);
     });
-    
   }
 }
