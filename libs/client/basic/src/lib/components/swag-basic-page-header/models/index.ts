@@ -1,0 +1,1 @@
+export * from './swag-basic-page-header.interface';

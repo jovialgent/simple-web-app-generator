@@ -127,6 +127,7 @@
       "root": "libs/client/basic",
       "sourceRoot": "libs/client/basic/src",
       "projectType": "library",
+      "prefix" : "swag-basic",
       "schematics": {},
       "architect": {
         "lint": {

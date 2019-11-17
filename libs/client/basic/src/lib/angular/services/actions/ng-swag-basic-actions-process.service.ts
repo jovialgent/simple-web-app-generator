@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SwagBasicActionProcessor } from '../../../services';
+import { SwagBasicActionProcessor, ISwagBasicVisit } from '../../../services';
 import { Observable } from 'rxjs';
 import {
   ISwagBasicActionConfig,
@@ -20,11 +20,11 @@ export class NgSwagBasicActionsProcessService {
     );
   }
 
-  process$(actions: ISwagBasicActionConfig[]): Observable<any> {
+  process$(actions: ISwagBasicActionConfig[]): Observable<ISwagBasicVisit> {
     return this._processor.process$(actions);
   }
 
-  process(actions: ISwagBasicActionConfig[]): Promise<any> {
+  process(actions: ISwagBasicActionConfig[]): Promise<ISwagBasicVisit> {
     return this._processor.process$(actions).toPromise();
   }
 

@@ -1,0 +1,25 @@
+<ng-container *ngIf="(load$ | async) as loadedData">
+    <ng-container *ngIf="(linksLoad$ | async) as linksLoadData">
+        <div [id]='pageInfo?.id'
+            class="swag-basic-page-navigation">
+            <ng-container *ngIf="pageInfo?.header">
+                <swag-basic-swag-basic-page-header
+                    [settings]="pageInfo?.header"
+                    [visit]="linksLoadData"
+                    [pageInfo]="pageInfo"
+                ></swag-basic-swag-basic-page-header>
+            </ng-container>
+            <main class="swag-basic-page-navigation-main">
+                MAIN
+            </main>
+            <ng-container *ngIf="pageInfo?.footer">
+                <footer class="swag-basic-page-navigation-footer">
+                    FOOTER
+                </footer>
+            </ng-container>
+        </div>
+        <pre>{{loadedData | json}}</pre>
+        <pre>{{linksLoadData | json}}</pre>
+    </ng-container>
+</ng-container>
+<div #vc></div>
