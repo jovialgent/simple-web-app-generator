@@ -1,5 +1,5 @@
+import { ISwagBasicPageStyleRuleObject } from '../../services/ui/models/swag-basic-page-style-rule-object.interface';
 import { ISwagBasicRuleObject } from '../../services';
-import { ISwagBasicPageStyleRuleObject } from './swag-basic-page-style-rule-object.interface';
 
 export interface ISwagBasicPageTemplate {
   html: string;

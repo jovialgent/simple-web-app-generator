@@ -1,8 +1,9 @@
 import { Observable, of } from 'rxjs';
+import { get, isEqual } from 'lodash';
+
 import { ISwagBasicRuleCondition } from '../models';
-import { ISwagBasicVisit } from '../../config';
-import { isEqual, get } from 'lodash';
 import { ISwagBasicRuleEvaluator } from './models';
+import { ISwagBasicVisit } from '../../config';
 
 export class SwagBasicRulesEvaluatorEquals implements ISwagBasicRuleEvaluator {
   evaluate$(

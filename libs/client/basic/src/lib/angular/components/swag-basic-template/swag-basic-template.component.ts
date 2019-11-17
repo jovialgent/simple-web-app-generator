@@ -37,11 +37,7 @@ export class SwagBasicTemplateComponent implements OnInit, AfterViewInit {
     private _moduleRef: NgModuleRef<any>
   ) {}
 
-  ngOnInit() {
-    console.log(this.settings);
-    console.log(this.visit);
-    console.log(this.pageInfo);
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     const templateVisit = cloneDeep(this.visit);
@@ -50,8 +46,8 @@ export class SwagBasicTemplateComponent implements OnInit, AfterViewInit {
     const template = this.settings.html;
     const tmpCmp = Component({ template: template })(
       class {
-        visit : ISwagBasicVisit = templateVisit;
-        page : ISwagBasicPage = templatePage;
+        visit: ISwagBasicVisit = templateVisit;
+        page: ISwagBasicPage = templatePage;
         settings: ISwagBasicTemplate = templateSettings;
       }
     );
@@ -62,7 +58,7 @@ export class SwagBasicTemplateComponent implements OnInit, AfterViewInit {
       .then(factories => {
         const f = factories.componentFactories[0];
         const cmpRef = f.create(this._injector, [], null, this._moduleRef);
-       
+
         this._container.insert(cmpRef.hostView);
       });
   }

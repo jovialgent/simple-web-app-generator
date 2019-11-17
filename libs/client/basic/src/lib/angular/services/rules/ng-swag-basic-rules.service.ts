@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
 import {
-  SwagBasicRules,
+  BasicRuleConditionOperator,
   ISwagBasicRuleObject,
   ISwagBasicVisit,
-  BasicRuleConditionOperator,
-  ISwagRuleEvaluatorTypeMap
+  ISwagRuleEvaluatorTypeMap,
+  SwagBasicRules
 } from '../../../services';
 import { Observable, of } from 'rxjs';
+
+import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 
 @Injectable({
@@ -28,12 +29,25 @@ export class NgSwagBasicRulesService {
   ): Observable<ISwagBasicRuleObject> {
     return this._swagRuleService.evaluateFirst$(rules, visit);
   }
+  evaluateFirst(
+    rules: ISwagBasicRuleObject[],
+    visit: ISwagBasicVisit
+  ): Promise<ISwagBasicRuleObject> {
+    return this._swagRuleService.evaluateFirst$(rules, visit).toPromise();
+  }
 
   evaluateAll$(
     rules: ISwagBasicRuleObject[],
     visit: ISwagBasicVisit
   ): Observable<ISwagBasicRuleObject[]> {
     return this._swagRuleService.evaluateAll$(rules, visit);
+  }
+
+  evaluateAll(
+    rules: ISwagBasicRuleObject[],
+    visit: ISwagBasicVisit
+  ): Promise<ISwagBasicRuleObject[]> {
+    return this._swagRuleService.evaluateAll(rules, visit);
   }
 
   getRules(): SwagBasicRules {

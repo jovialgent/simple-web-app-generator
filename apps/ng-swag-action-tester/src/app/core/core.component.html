@@ -1,1 +1,3 @@
-<swag-basic-page-navigation [pageInfo]="pageInfo"></swag-basic-page-navigation>
+<ng-container *ngIf="pageInfo">
+    <swag-basic-page-navigation [pageInfo]="pageInfo"></swag-basic-page-navigation>
+</ng-container>

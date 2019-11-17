@@ -7,5 +7,5 @@ export interface ISwagBasicTemplate {
   id: string;
   html: string;
   style?: string | CSSStyleDeclaration | ISwagBasicPageStyleRuleObject[];
-  classes?: string | object | ISwagBasicPageClassesRuleObject[];
+  classes?: string | string[] | ISwagBasicPageClassesRuleObject[];
 }

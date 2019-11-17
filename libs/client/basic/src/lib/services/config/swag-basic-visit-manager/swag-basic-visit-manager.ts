@@ -1,14 +1,15 @@
-import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
-import { tap, mergeMap, map } from 'rxjs/operators';
-import { Observable, of, combineLatest, Subject } from 'rxjs';
-import { uniqueId, merge, get, set } from 'lodash';
-import { ISwagAppClientVisitServer } from '../models';
 import {
-  SwagBasicServerManager,
+  ISwagBasicServerManagerPathVisit,
   ISwagBasicServerManagerPathsVisit,
-  SwagBasicServerManagerUtils,
-  ISwagBasicServerManagerPathVisit
+  SwagBasicServerManager,
+  SwagBasicServerManagerUtils
 } from '../../server';
+import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
+import { Observable, Subject, combineLatest, of } from 'rxjs';
+import { get, merge, set, uniqueId } from 'lodash';
+import { map, mergeMap, tap } from 'rxjs/operators';
+
+import { ISwagAppClientVisitServer } from '../models';
 
 export class SwagBasicVisitManager extends Subject<{
   current: ISwagBasicVisit;
@@ -26,7 +27,6 @@ export class SwagBasicVisitManager extends Subject<{
   public createVisit$(
     config?: ISwagBasicVisitManagerConfig
   ): Observable<ISwagBasicVisit> {
-    console.log(config);
     const mappedConfig: ISwagBasicVisitManagerConfig = this._getDefaultConfig(
       config
     );

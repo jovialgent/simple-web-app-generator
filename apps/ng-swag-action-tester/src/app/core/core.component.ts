@@ -11,7 +11,9 @@ import {
   ISwagBasicAction,
   ISwagBasicActionConfig,
   ISwagBasicActionConfigSetVisitServerData,
-  ISwagBasicPageNavigation
+  ISwagBasicPageNavigation,
+  NgSwagBasicUiClassesService,
+  ISwagBasicPageClassesRuleObject
 } from '@simple-web-app-generator/client/basic';
 import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
@@ -27,7 +29,8 @@ export class CoreComponent implements OnInit {
   constructor(
     public actionProcessor: NgSwagBasicActionsProcessService,
     private _rules: NgSwagBasicRulesService,
-    private _client: NgSwagBasicClientManagerService
+    private _client: NgSwagBasicClientManagerService,
+    private _uiClassService: NgSwagBasicUiClassesService
   ) {}
 
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
@@ -48,49 +51,74 @@ export class CoreComponent implements OnInit {
       }
     };
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
-      console.log(data);
-    });
+      this._uiClassService
+        .addClasses$(
+          'div',
+          <ISwagBasicPageClassesRuleObject[]>[
+            {
+              className: ['test-class', 'test-class-1']
+            },
+            {
+              className: ['server-class', 'server-class-1'],
+              rule: {
+                conditionOperator: 'and',
+                conditions: [
+                  {
+                    evaluatorType: 'basic',
+                    key: 'server.data.test2',
+                    is: 'equals',
+                    value: 'YO'
+                  }
+                ]
+              }
+            }
+          ],
+          this._rules.getRules(),
+          data.client.visit
+        )
+        .subscribe(element => {});
 
-    this.pageInfo = {
-      id: 'test-navigation',
-      path: '/test-navigation',
-      header: {
-        id: 'test-navigation-header',
-        html: `
+      this.pageInfo = {
+        id: 'test-navigation',
+        path: '/test-navigation',
+        header: {
+          id: 'test-navigation-header',
+          html: `
         <div id="test">
           <h1>Test</h1>
         </div>`
-      },
-      onLoad: [
-        {
-          actionType: SwagBasicActionConfigEventName.Basic,
-          eventName: SwagBasicActionConfigEventName.SetVisitData,
-          args: {
-            data: {
-              loadedNav: true
+        },
+        onLoad: [
+          {
+            actionType: SwagBasicActionConfigEventName.Basic,
+            eventName: SwagBasicActionConfigEventName.SetVisitData,
+            args: {
+              data: {
+                loadedNav: true
+              }
             }
           }
-        }
-      ],
-      onLinksLoad: [
-        {
-          actionType: SwagBasicActionConfigEventName.Basic,
-          eventName: SwagBasicActionConfigEventName.SetVisitData,
-          args: {
-            data: {
-              loadedLinksNav: true
+        ],
+        onLinksLoad: [
+          {
+            actionType: SwagBasicActionConfigEventName.Basic,
+            eventName: SwagBasicActionConfigEventName.SetVisitData,
+            args: {
+              data: {
+                loadedLinksNav: true
+              }
             }
           }
-        }
-      ],
-      links: [
-        {
-          id: 'my-test-link',
-          url: 'https://www.google.com',
-          label: 'My Label'
-        }
-      ]
-    };
+        ],
+        links: [
+          {
+            id: 'my-test-link',
+            url: 'https://www.google.com',
+            label: 'My Label'
+          }
+        ]
+      };
+    });
   }
 
   fireAction(action: ISwagBasicActionConfig) {
