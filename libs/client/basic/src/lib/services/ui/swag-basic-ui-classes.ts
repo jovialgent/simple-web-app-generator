@@ -26,8 +26,6 @@ export class SwagBasicUiClasses {
     const evaluateClassRules: boolean =
       !!ruleManger && this._checkForClassRuleArray(settings);
 
-    console.log(evaluateClassRules);
-
     return isSettingsString
       ? of(this._addClassFromString(elements, <string>settings))
       : isStringArray

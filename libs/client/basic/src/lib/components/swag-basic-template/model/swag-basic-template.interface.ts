@@ -1,7 +1,7 @@
 import {
   ISwagBasicPageClassesRuleObject,
   ISwagBasicPageStyleRuleObject
-} from '../../models';
+} from '../../../services';
 
 export interface ISwagBasicTemplate {
   id: string;

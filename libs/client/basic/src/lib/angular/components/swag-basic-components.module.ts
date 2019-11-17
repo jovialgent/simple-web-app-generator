@@ -10,7 +10,7 @@ const exports = [SwagBasicPageNavigationComponent];
 @NgModule({
   declarations: [
     SwagBasicPageNavigationComponent,
-    SwagBasicTemplateComponent,
+    // SwagBasicTemplateComponent,
     SwagBasicPageHeaderComponent,
     SwagBasicPageFooterComponent
   ],

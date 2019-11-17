@@ -52,6 +52,7 @@ export class SwagBasicTemplateComponent implements OnInit, AfterViewInit {
       }
     );
     const tmpModule = NgModule({ declarations: [tmpCmp] })(class {});
+    
 
     this._compiler
       .compileModuleAndAllComponentsAsync(tmpModule)

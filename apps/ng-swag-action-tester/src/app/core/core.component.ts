@@ -13,7 +13,8 @@ import {
   ISwagBasicActionConfigSetVisitServerData,
   ISwagBasicPageNavigation,
   NgSwagBasicUiClassesService,
-  ISwagBasicPageClassesRuleObject
+  ISwagBasicPageClassesRuleObject,
+  SwagBasicUi
 } from '@simple-web-app-generator/client/basic';
 import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
@@ -39,6 +40,7 @@ export class CoreComponent implements OnInit {
   public pageInfo: ISwagBasicPageNavigation;
 
   ngOnInit() {
+   
     this.sampleAction = <ISwagBasicActionConfigSetVisitServerData>{
       actionType: 'basic',
       eventName: SwagBasicActionConfigEventName.SetVisitServerData,
@@ -58,7 +60,7 @@ export class CoreComponent implements OnInit {
           id: 'test-navigation-header',
           html: `
         <div id="test">
-          <h1>Test</h1>
+          <h1>Test {{visit.data.test}}</h1>
         </div>`,
           classes: <ISwagBasicPageClassesRuleObject[]>[
             {
