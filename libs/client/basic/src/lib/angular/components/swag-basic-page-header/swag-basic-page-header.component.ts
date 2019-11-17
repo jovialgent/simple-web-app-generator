@@ -1,17 +1,20 @@
 import {
-  Compiler,
   Component,
-  Injector,
   Input,
-  NgModule,
-  NgModuleRef,
   OnInit,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
 import { ISwagBasicPage, ISwagBasicPageHeader } from '../../../components';
+import {
+  NgSwagBasicClientManagerService,
+  NgSwagBasicRulesService,
+  NgSwagBasicUiClassesService
+} from '../../services';
+import { Observable, combineLatest, of } from 'rxjs';
 
 import { ISwagBasicVisit } from '../../../services';
+import { combineAll } from 'rxjs/operators';
 
 @Component({
   selector: 'swag-basic-swag-basic-page-header',
@@ -23,17 +26,28 @@ export class SwagBasicPageHeaderComponent implements OnInit {
   @Input() visit: ISwagBasicVisit;
   @Input() pageInfo: ISwagBasicPage;
 
+  public style$: Observable<any>;
+
   @ViewChild('swagTemplate', { read: ViewContainerRef, static: false })
   _container: ViewContainerRef;
 
   constructor(
-    private _compiler: Compiler,
-    private _injector: Injector,
-    private _moduleRef: NgModuleRef<any>
+    private _rules: NgSwagBasicRulesService,
+    private _client: NgSwagBasicClientManagerService,
+    private _uiClassService: NgSwagBasicUiClassesService
   ) {}
 
   ngOnInit() {
-   
+    const class$ = !!this.settings.classes
+      ? this._uiClassService.addClasses$(
+          'header',
+          this.settings.classes,
+          this._rules.getRules(),
+          this._client.getClientManager().getVisit()
+        )
+      : of();
+
+    this.style$ = combineLatest([class$]);
   }
 
   ngAfterViewInit() {}

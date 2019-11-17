@@ -51,10 +51,16 @@ export class CoreComponent implements OnInit {
       }
     };
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
-      this._uiClassService
-        .addClasses$(
-          'div',
-          <ISwagBasicPageClassesRuleObject[]>[
+      this.pageInfo = {
+        id: 'test-navigation',
+        path: '/test-navigation',
+        header: {
+          id: 'test-navigation-header',
+          html: `
+        <div id="test">
+          <h1>Test</h1>
+        </div>`,
+          classes: <ISwagBasicPageClassesRuleObject[]>[
             {
               className: ['test-class', 'test-class-1']
             },
@@ -72,21 +78,7 @@ export class CoreComponent implements OnInit {
                 ]
               }
             }
-          ],
-          this._rules.getRules(),
-          data.client.visit
-        )
-        .subscribe(element => {});
-
-      this.pageInfo = {
-        id: 'test-navigation',
-        path: '/test-navigation',
-        header: {
-          id: 'test-navigation-header',
-          html: `
-        <div id="test">
-          <h1>Test</h1>
-        </div>`
+          ]
         },
         onLoad: [
           {
