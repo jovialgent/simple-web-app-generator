@@ -1,12 +1,17 @@
-import { Injectable } from '@angular/core';
 import {
-  SwagBasicClientManager,
-  ISwagBasicClientDefault
+  ISwagApp,
+  ISwagBasicSetupConfig,
+  SwagBasicVisitManager
+} from '../../../services';
+import {
+  ISwagBasicClientDefault,
+  SwagBasicClientManager
 } from '../../../services/client';
+
+import { Injectable } from '@angular/core';
 import { NgSwagBasicRulesService } from '../rules';
-import { cloneDeep } from 'lodash';
 import { Observable } from 'rxjs';
-import { ISwagApp, ISwagBasicSetupConfig } from '../../../services';
+import { cloneDeep } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +35,9 @@ export class NgSwagBasicClientManagerService {
 
   public getClientManager(): SwagBasicClientManager {
     return this._clientManager;
+  }
+
+  public getVisitManager(): SwagBasicVisitManager {
+    return this._clientManager.getVisitManager();
   }
 }

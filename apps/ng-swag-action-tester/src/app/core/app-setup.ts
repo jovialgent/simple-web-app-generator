@@ -20,12 +20,7 @@ export const config: ISwagBasicSetupConfig = {
             update: {
               path: '/update-paths',
               requiredHeaders: {},
-              protectedPath: false,
-              query:{
-                test : 1,
-                test2: 2,
-                test3: 'This is my query damn it'
-              }
+              protectedPath: false
             }
           },
           update: {

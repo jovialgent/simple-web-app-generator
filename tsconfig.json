@@ -25,5 +25,6 @@
       "@simple-web-app-generator/instance": ["libs/instance/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp", "tools/schematics/**/*.*"]
+  "exclude": ["node_modules", "tmp", "tools/schematics/**/*.*"],
+  "include" : ["./html.d.ts"]
 }

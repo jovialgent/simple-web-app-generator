@@ -14,7 +14,8 @@ import {
   ISwagBasicPageNavigation,
   NgSwagBasicUiClassesService,
   ISwagBasicPageClassesRuleObject,
-  SwagBasicUi
+  SwagBasicUi,
+  NgSwagUiManagerService
 } from '@simple-web-app-generator/client/basic';
 import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
@@ -31,7 +32,8 @@ export class CoreComponent implements OnInit {
     public actionProcessor: NgSwagBasicActionsProcessService,
     private _rules: NgSwagBasicRulesService,
     private _client: NgSwagBasicClientManagerService,
-    private _uiClassService: NgSwagBasicUiClassesService
+    private _uiClassService: NgSwagBasicUiClassesService,
+    private _uiService: NgSwagUiManagerService
   ) {}
 
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
@@ -40,27 +42,30 @@ export class CoreComponent implements OnInit {
   public pageInfo: ISwagBasicPageNavigation;
 
   ngOnInit() {
-   
-    this.sampleAction = <ISwagBasicActionConfigSetVisitServerData>{
-      actionType: 'basic',
-      eventName: SwagBasicActionConfigEventName.SetVisitServerData,
-      args: {
-        data: {
-          fromClient: 'this came from data',
-          randomData: Math.floor(Math.random() * 100)
-        },
-        query: '?test=true'
-      }
-    };
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
       this.pageInfo = {
         id: 'test-navigation',
         path: '/test-navigation',
+        footer: {
+          id: 'test-navigation-footer',
+          html: `<div id="footer-test">I am the footer. Some random data: {{visit?.current?.server?.data?.randomData}}</div>`,
+          classes: <ISwagBasicPageClassesRuleObject[]>[
+            {
+              className: ['test-class', 'test-class-1']
+            }
+          ],
+          renderData: {
+            template: `<footer class="swag-basic-footer" {{{tag}}}>{{{body}}}</footer>`
+          },
+          data: {
+            test: 'Data from settings'
+          }
+        },
         header: {
           id: 'test-navigation-header',
           html: `
         <div id="test">
-          <h1>Test {{visit.data.test}}</h1>
+          <h1>Test {{visit?.current?.data?.test}}</h1>
         </div>`,
           classes: <ISwagBasicPageClassesRuleObject[]>[
             {
@@ -80,7 +85,10 @@ export class CoreComponent implements OnInit {
                 ]
               }
             }
-          ]
+          ],
+          renderData: {
+            template: `<header class="swag-basic-header" {{{tag}}}>{{{body}}}</header>`
+          }
         },
         onLoad: [
           {
@@ -108,16 +116,30 @@ export class CoreComponent implements OnInit {
           {
             id: 'my-test-link',
             url: 'https://www.google.com',
-            label: 'My Label'
+            html: 'My Label'
           }
         ]
       };
     });
+
+    setTimeout(() => {
+      this.sampleAction = <ISwagBasicActionConfigSetVisitServerData>{
+        actionType: 'basic',
+        eventName: SwagBasicActionConfigEventName.SetVisitServerData,
+        args: {
+          data: {
+            fromClient: 'this came from data',
+            randomData: Math.floor(Math.random() * 100)
+          },
+          query: '?test=true'
+        }
+      };
+
+      this.fireAction(this.sampleAction);
+    }, 6000);
   }
 
   fireAction(action: ISwagBasicActionConfig) {
-    this.actionProcessor.process([action]).then(data => {
-      console.log(data);
-    });
+    this.actionProcessor.process([action]).then(data => {});
   }
 }

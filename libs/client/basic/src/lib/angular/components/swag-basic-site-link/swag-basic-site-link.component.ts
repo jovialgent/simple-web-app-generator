@@ -1,20 +1,18 @@
 import {
-  AfterViewInit,
   Compiler,
   Component,
-  Injector,
   Input,
   NgModule,
-  NgModuleRef,
   OnInit,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
 import {
+  ISwagBasicLink,
+  ISwagBasicLinkRender,
   ISwagBasicPage,
-  ISwagBasicPageHeader,
-  ISwagBasicPageHeaderRender,
   ISwagBasicTemplate,
+  SwagBasicLink,
   SwagBasicPageHeader
 } from '../../../components';
 import {
@@ -23,24 +21,24 @@ import {
   NgSwagBasicUiClassesService,
   NgSwagUiManagerService
 } from '../../services';
-import { Observable, combineLatest, of } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
 import { ISwagBasicVisit } from '../../../services';
-import { SwagBasicTemplateComponent } from '../swag-basic-template/swag-basic-template.component';
 import { cloneDeep } from 'lodash';
 
 @Component({
-  selector: 'swag-basic-swag-basic-page-header',
-  templateUrl: './swag-basic-page-header.component.html',
-  styleUrls: ['./swag-basic-page-header.component.css']
+  selector: 'swag-basic-site-link',
+  templateUrl: './swag-basic-site-link.component.html',
+  styleUrls: ['./swag-basic-site-link.component.css']
 })
-export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
-  @Input() settings: ISwagBasicPageHeader;
+export class SwagBasicSiteLinkComponent implements OnInit {
+  @Input() settings: ISwagBasicLink;
+  @Input() visit: ISwagBasicVisit;
 
   public style$: Observable<any>;
 
-  @ViewChild('swagHeaderTemplate', { read: ViewContainerRef, static: false })
+  @ViewChild('swagLinkTemplate', { read: ViewContainerRef, static: false })
   _container: ViewContainerRef;
 
   constructor(
@@ -54,8 +52,7 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const renderer: SwagBasicPageHeader = this._uiManager.getUiMap().page
-      .header;
+    const renderer: SwagBasicLink = this._uiManager.getUiMap().site.link;
     const renderData = !!this.settings.renderData
       ? { ...this.settings.renderData, ...this._getDefaultRender() }
       : this._getDefaultRender();
@@ -70,20 +67,22 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
         current: ISwagBasicVisit;
         previous: ISwagBasicVisit;
       }>;
-      public settings: ISwagBasicTemplate;
+      public settings: ISwagBasicLink;
       public style$: Observable<any>;
 
       constructor(
+        private _uiClassService: NgSwagBasicUiClassesService,
         private _rules: NgSwagBasicRulesService,
-        private _client: NgSwagBasicClientManagerService,
-        private _uiClassService: NgSwagBasicUiClassesService
+        private _client: NgSwagBasicClientManagerService
       ) {}
 
       ngOnInit() {
         this.visit$ = this._client.getVisitManager();
+
         this.settings = settings;
 
         const elementId = `#${this.settings.id}`;
+
         const class$ = this._uiClassService.addClasses$(
           elementId,
           this.settings.classes,
@@ -94,7 +93,6 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
 
         this.style$ = style$;
       }
-      ngAfterViewInit() {}
     }
 
     @NgModule({
@@ -113,15 +111,21 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private _getDefaultRender(): ISwagBasicPageHeaderRender {
+  private _getDefaultRender(): ISwagBasicLinkRender {
     return {
       body: `
       <ng-container *ngIf="(style$ | async)">
       </ng-container>
       <ng-container *ngIf="(visit$ | async) as visit">
-     ${this.settings.html}
+     ${
+       !!this.settings.html
+         ? this.settings.html
+         : !!this.settings.url
+         ? this.settings.url
+         : ''
+     }
      </ng-container>`,
-      tag: `id="${this.settings.id}"`
+      tag: `id="${this.settings.id}" [href]="settings?.url"`
     };
   }
 }

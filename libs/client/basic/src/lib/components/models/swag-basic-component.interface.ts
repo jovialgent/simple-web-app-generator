@@ -1,4 +1,4 @@
 export interface ISwagBasicComponent {
-  getHTML(settings?: any): string;
+  getHTML(settings?: any, template?: string): string;
   getTemplate(): string;
 }

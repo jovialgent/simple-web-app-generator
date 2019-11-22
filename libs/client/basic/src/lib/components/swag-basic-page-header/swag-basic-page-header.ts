@@ -1,5 +1,6 @@
 import { ISwagBasicComponent } from '../models';
 import { ISwagBasicPageHeaderRender } from './models/swag-basic-page-header-render.interface';
+import { isEmpty } from 'lodash';
 import { render } from 'mustache';
 
 export class SwagBasicPageHeader implements ISwagBasicComponent {
@@ -7,13 +8,16 @@ export class SwagBasicPageHeader implements ISwagBasicComponent {
     body: '',
     tag: ''
   };
+
   constructor() {}
 
-  getHTML(data?: ISwagBasicPageHeaderRender): string {
+  getHTML(data?: ISwagBasicPageHeaderRender, template?: string): string {
     const templateData: ISwagBasicPageHeaderRender = !!data
       ? data
       : this._emptyRenderData;
-    const templateString = this.getTemplate();
+    const templateString = !isEmpty(data.template)
+      ? data.template
+      : this.getTemplate();
 
     return render(templateString, templateData);
   }

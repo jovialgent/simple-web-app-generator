@@ -26,7 +26,6 @@ export class SwagBasicServerManagerUtils {
     body: any,
     headers?: any
   ): Observable<T> {
-    console.log(...arguments);
     return ajax
       .post(path, body)
       .pipe(map((results: AjaxResponse) => <T>results.response));

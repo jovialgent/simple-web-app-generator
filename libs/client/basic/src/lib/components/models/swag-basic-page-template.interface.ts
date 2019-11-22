@@ -5,4 +5,5 @@ export interface ISwagBasicPageTemplate {
   html: string;
   style?: string | CSSStyleDeclaration | ISwagBasicPageStyleRuleObject[];
   classes?: string | object | ISwagBasicRuleObject[];
+  data?: any;
 }

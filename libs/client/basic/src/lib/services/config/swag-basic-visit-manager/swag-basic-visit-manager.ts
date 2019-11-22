@@ -1,3 +1,4 @@
+import { BehaviorSubject, Observable, Subject, combineLatest, of } from 'rxjs';
 import {
   ISwagBasicServerManagerPathVisit,
   ISwagBasicServerManagerPathsVisit,
@@ -5,13 +6,12 @@ import {
   SwagBasicServerManagerUtils
 } from '../../server';
 import { ISwagBasicVisit, ISwagBasicVisitManagerConfig } from './models';
-import { Observable, Subject, combineLatest, of } from 'rxjs';
 import { get, merge, set, uniqueId } from 'lodash';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
 import { ISwagAppClientVisitServer } from '../models';
 
-export class SwagBasicVisitManager extends Subject<{
+export class SwagBasicVisitManager extends BehaviorSubject<{
   current: ISwagBasicVisit;
   previous: ISwagBasicVisit;
 }> {
@@ -19,7 +19,10 @@ export class SwagBasicVisitManager extends Subject<{
   private _serverManager: SwagBasicServerManager;
 
   constructor() {
-    super();
+    super({
+      current: { id: '', data: {} },
+      previous: { id: '', data: {} }
+    });
 
     this._serverManager = new SwagBasicServerManager();
   }
@@ -138,8 +141,8 @@ export class SwagBasicVisitManager extends Subject<{
   }
 
   private _createPersistentData(config: any, id: string): Observable<any> {
-    const oldData : any = localStorage[id] ? JSON.parse(localStorage[id]) : {}; 
-        
+    const oldData: any = localStorage[id] ? JSON.parse(localStorage[id]) : {};
+
     return of({});
   }
   private _createVisitData(data: any, id: string): Observable<any> {

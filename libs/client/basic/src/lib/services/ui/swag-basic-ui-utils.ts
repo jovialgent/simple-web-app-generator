@@ -12,6 +12,7 @@ export class SwagBasicUiUtils {
       : isNodeList
       ? <NodeList>element
       : [];
+
     return Array.from(results).map(element => {
       return <HTMLElement>element;
     });

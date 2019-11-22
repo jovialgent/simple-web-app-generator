@@ -9,9 +9,9 @@ import {
   ISwagBasicRuleObject
 } from '../../services';
 
+import { ISwagBasicPageFooter } from '../swag-basic-page-footer';
 import { ISwagBasicPageHeader } from '../swag-basic-page-header';
 import { ISwagBasicPageNavigationRule } from './swag-basic-page-navigation-rule.interface';
-import { ISwagBasicPageTemplate } from './swag-basic-page-template.interface';
 
 export interface ISwagBasicPage {
   id: string;
@@ -19,7 +19,7 @@ export interface ISwagBasicPage {
   style?: string | CSSStyleDeclaration | ISwagBasicPageStyleRuleObject[];
   classes?: string | object | ISwagBasicPageClassesRuleObject[];
   header?: ISwagBasicPageHeader;
-  footer?: ISwagBasicPageTemplate;
+  footer?: ISwagBasicPageFooter;
   onLoad?: ISwagBasicActionConfig[];
   onLeave?: ISwagBasicActionConfig[];
   next?: ISwagBasicPageNavigationRule[];
