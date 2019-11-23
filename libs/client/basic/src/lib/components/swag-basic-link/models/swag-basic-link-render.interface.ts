@@ -1,8 +1,10 @@
-import { ISwagBasicPageNavigationRule } from '../../models';
+import {
+  ISwagBasicPageNavigationRule,
+  ISwagBasicTemplateRender
+} from '../../models';
 
-export interface ISwagBasicLinkRender {
+export interface ISwagBasicLinkRender extends ISwagBasicTemplateRender {
   tag: string;
   body: string;
   route?: string | ISwagBasicPageNavigationRule[];
-  template?: string;
 }

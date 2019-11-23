@@ -24,11 +24,11 @@ import {
   NgSwagUiManagerService
 } from '../../services';
 import { Observable, combineLatest, of } from 'rxjs';
+import { cloneDeep, isEmpty } from 'lodash';
 
 import { CommonModule } from '@angular/common';
 import { ISwagBasicVisit } from '../../../services';
 import { SwagBasicTemplateComponent } from '../swag-basic-template/swag-basic-template.component';
-import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'swag-basic-swag-basic-page-header',
@@ -54,12 +54,11 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const renderer: SwagBasicPageHeader = this._uiManager.getUiMap().page
-      .header;
-    const renderData = !!this.settings.renderData
-      ? { ...this.settings.renderData, ...this._getDefaultRender() }
-      : this._getDefaultRender();
-    const template = renderer.getHTML(renderData);
+    const template = this._uiManager.getTemplate(
+      'page.header',
+      this._getDefaultRender(),
+      this.settings.renderData
+    );
     const settings = cloneDeep(this.settings);
 
     @Component({
@@ -74,9 +73,8 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
       public style$: Observable<any>;
 
       constructor(
-        private _rules: NgSwagBasicRulesService,
         private _client: NgSwagBasicClientManagerService,
-        private _uiClassService: NgSwagBasicUiClassesService
+        private _uiManager: NgSwagUiManagerService
       ) {}
 
       ngOnInit() {
@@ -84,15 +82,11 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
         this.settings = settings;
 
         const elementId = `#${this.settings.id}`;
-        const class$ = this._uiClassService.addClasses$(
-          elementId,
-          this.settings.classes,
-          this._rules.getRules(),
-          this._client.getClientManager().getVisit()
-        );
-        const style$ = combineLatest([class$]);
 
-        this.style$ = style$;
+        this.style$ = this._uiManager.getStyle$(
+          elementId,
+          this.settings.classes
+        );
       }
       ngAfterViewInit() {}
     }
@@ -111,6 +105,29 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
         );
         const cmpRef = this._container.createComponent(factory);
       });
+  }
+
+  private _getTemplate(): string {
+    const renderer: SwagBasicPageHeader = this._uiManager.getUiMap().page
+      .header;
+    const renderData: ISwagBasicPageHeaderRender = this._getRenderData();
+
+    return renderer.getHTML(renderData);
+  }
+
+  private _getRenderData(): ISwagBasicPageHeaderRender {
+    const customTemplate: ISwagBasicPageHeaderRender = this._uiManager.getUiTemplateMap()
+      .page.header;
+    const hasLocalRenderData = !isEmpty(this.settings.renderData);
+    const hasCustomRenderData = !isEmpty(customTemplate);
+
+    console.log(hasLocalRenderData);
+
+    return hasLocalRenderData
+      ? { ...this.settings.renderData, ...this._getDefaultRender() }
+      : hasCustomRenderData
+      ? { ...customTemplate, ...this._getDefaultRender() }
+      : this._getDefaultRender();
   }
 
   private _getDefaultRender(): ISwagBasicPageHeaderRender {

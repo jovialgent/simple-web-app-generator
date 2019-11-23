@@ -1,5 +1,7 @@
-export interface ISwagBasicPageFooterRender{
-    tag?: string;
-    body?: string;
-    template?: string;
+import { ISwagBasicTemplateRender } from '../../models';
+
+export interface ISwagBasicPageFooterRender extends ISwagBasicTemplateRender {
+  tag?: string;
+  body?: string;
+  template?: string;
 }

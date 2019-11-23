@@ -10,21 +10,16 @@ import {
 import {
   ISwagBasicLink,
   ISwagBasicLinkRender,
-  ISwagBasicPage,
-  ISwagBasicTemplate,
-  SwagBasicLink,
-  SwagBasicPageHeader
+  ISwagBasicTemplate
 } from '../../../components';
 import {
   NgSwagBasicClientManagerService,
-  NgSwagBasicRulesService,
-  NgSwagBasicUiClassesService,
   NgSwagUiManagerService
 } from '../../services';
-import { Observable, combineLatest } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
 import { ISwagBasicVisit } from '../../../services';
+import { Observable } from 'rxjs';
 import { cloneDeep } from 'lodash';
 
 @Component({
@@ -42,9 +37,6 @@ export class SwagBasicSiteLinkComponent implements OnInit {
   _container: ViewContainerRef;
 
   constructor(
-    private _rules: NgSwagBasicRulesService,
-    private _client: NgSwagBasicClientManagerService,
-    private _uiClassService: NgSwagBasicUiClassesService,
     private _uiManager: NgSwagUiManagerService,
     private _compiler: Compiler
   ) {}
@@ -52,11 +44,11 @@ export class SwagBasicSiteLinkComponent implements OnInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const renderer: SwagBasicLink = this._uiManager.getUiMap().site.link;
-    const renderData = !!this.settings.renderData
-      ? { ...this.settings.renderData, ...this._getDefaultRender() }
-      : this._getDefaultRender();
-    const template = renderer.getHTML(renderData);
+    const template = this._uiManager.getTemplate(
+      'site.link',
+      this._getDefaultRender(),
+      this.settings.renderData
+    );
     const settings = cloneDeep(this.settings);
 
     @Component({
@@ -67,31 +59,23 @@ export class SwagBasicSiteLinkComponent implements OnInit {
         current: ISwagBasicVisit;
         previous: ISwagBasicVisit;
       }>;
-      public settings: ISwagBasicLink;
+      public settings: ISwagBasicTemplate;
       public style$: Observable<any>;
 
       constructor(
-        private _uiClassService: NgSwagBasicUiClassesService,
-        private _rules: NgSwagBasicRulesService,
-        private _client: NgSwagBasicClientManagerService
+        private _client: NgSwagBasicClientManagerService,
+        private _uiManager: NgSwagUiManagerService
       ) {}
 
       ngOnInit() {
+        const elementId = `#${settings.id}`;
+
         this.visit$ = this._client.getVisitManager();
-
         this.settings = settings;
-
-        const elementId = `#${this.settings.id}`;
-
-        const class$ = this._uiClassService.addClasses$(
+        this.style$ = this._uiManager.getStyle$(
           elementId,
-          this.settings.classes,
-          this._rules.getRules(),
-          this._client.getClientManager().getVisit()
+          this.settings.classes
         );
-        const style$ = combineLatest([class$]);
-
-        this.style$ = style$;
       }
     }
 

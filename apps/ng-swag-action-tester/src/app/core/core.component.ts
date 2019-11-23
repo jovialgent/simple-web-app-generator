@@ -42,6 +42,7 @@ export class CoreComponent implements OnInit {
   public pageInfo: ISwagBasicPageNavigation;
 
   ngOnInit() {
+   
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
       this.pageInfo = {
         id: 'test-navigation',
@@ -54,9 +55,7 @@ export class CoreComponent implements OnInit {
               className: ['test-class', 'test-class-1']
             }
           ],
-          renderData: {
-            template: `<footer class="swag-basic-footer" {{{tag}}}>{{{body}}}</footer>`
-          },
+
           data: {
             test: 'Data from settings'
           }
@@ -85,10 +84,7 @@ export class CoreComponent implements OnInit {
                 ]
               }
             }
-          ],
-          renderData: {
-            template: `<header class="swag-basic-header" {{{tag}}}>{{{body}}}</header>`
-          }
+          ]
         },
         onLoad: [
           {
@@ -129,7 +125,8 @@ export class CoreComponent implements OnInit {
         args: {
           data: {
             fromClient: 'this came from data',
-            randomData: Math.floor(Math.random() * 100)
+            randomData: Math.floor(Math.random() * 100),
+            test2: "YO"
           },
           query: '?test=true'
         }

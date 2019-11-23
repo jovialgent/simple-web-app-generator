@@ -1,46 +1,31 @@
 import {
-  Compiler,
-  Component,
-  Injectable,
-  Injector,
-  NgModule,
-  NgModuleRef,
-  TypeDecorator,
-  ViewContainerRef
-} from '@angular/core';
-import {
-  ISwagBasicPage,
-  ISwagBasicTemplate,
+  ISwagBasicTemplateRender,
   SwagBasicUi,
   SwagBasicUiTemplate
 } from '../../../components';
-import { Observable, combineLatest, of } from 'rxjs';
-import { cloneDeep, merge } from 'lodash';
+import { Observable, combineLatest } from 'rxjs';
+import { cloneDeep, get, isEmpty, merge } from 'lodash';
 
-import { CommonModule } from '@angular/common';
-import { ISwagBasicUiRendererData } from './models';
-import { ISwagBasicVisit } from '../../../services';
+import { ISwagBasicPageClassesRuleObject } from '../../../services';
+import { Injectable } from '@angular/core';
 import { NgSwagBasicClientManagerService } from '../client';
 import { NgSwagBasicRulesService } from '../rules';
 import { NgSwagBasicUiClassesService } from './ng-swag-basic-ui-classes.service';
-import { SwagBasicTemplateComponent } from '../../components/swag-basic-template';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NgSwagUiManagerService {
   private _uiMap: SwagBasicUiTemplate;
-  private _tempModule: any;
-  private _imports: any[];
+  private _uiTemplateMap: any;
 
   constructor(
     private _rules: NgSwagBasicRulesService,
     private _client: NgSwagBasicClientManagerService,
-    private _uiClassService: NgSwagBasicUiClassesService,
-    private _uiManager: NgSwagUiManagerService,
-
+    private _uiClassService: NgSwagBasicUiClassesService
   ) {
     this._uiMap = SwagBasicUi;
+    this._uiTemplateMap = {};
   }
 
   getUiMap(): any {
@@ -62,5 +47,60 @@ export class NgSwagUiManagerService {
     this._uiMap = uiMap;
 
     return oldMap;
+  }
+
+  settUiTemplateMap(uiTemplateMap: any): any {
+    this._uiTemplateMap = cloneDeep(uiTemplateMap);
+  }
+
+  getUiTemplateMap(): any {
+    return this._uiTemplateMap;
+  }
+
+  public getStyle$(
+    elementId,
+    classes: string | string[] | ISwagBasicPageClassesRuleObject[]
+  ): Observable<[HTMLElement[]]> {
+    const class$ = this._uiClassService.addClasses$(
+      elementId,
+      classes,
+      this._rules.getRules(),
+      this._client.getClientManager().getVisit()
+    );
+    return combineLatest([class$]);
+  }
+
+  getTemplate(
+    path: string,
+    defaultRenderData: ISwagBasicTemplateRender,
+    customTemplateData: ISwagBasicTemplateRender
+  ): string {
+    const renderer = get(this.getUiMap(), path);
+    const renderData: ISwagBasicTemplateRender = this._getRenderData(
+      path,
+      defaultRenderData,
+      customTemplateData
+    );
+
+    return renderer.getHTML(renderData);
+  }
+
+  private _getRenderData(
+    path: string,
+    defaultRenderData: ISwagBasicTemplateRender,
+    customTemplateData: ISwagBasicTemplateRender
+  ): ISwagBasicTemplateRender {
+    const uiTemplateMapData: ISwagBasicTemplateRender = get(
+      this._uiTemplateMap,
+      path
+    );
+    const hasCustomTemplateData: boolean = !isEmpty(customTemplateData);
+    const hasUiTemplateMapData = !isEmpty(uiTemplateMapData);
+
+    return hasCustomTemplateData
+      ? { ...customTemplateData, ...defaultRenderData }
+      : hasUiTemplateMapData
+      ? { ...uiTemplateMapData, ...defaultRenderData }
+      : defaultRenderData;
   }
 }
