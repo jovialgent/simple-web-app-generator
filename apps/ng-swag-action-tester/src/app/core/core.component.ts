@@ -2,20 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import {
   NgSwagBasicActionsProcessService,
   SwagBasicVisitManager,
-  NgSwagBasicRulesService,
   NgSwagBasicClientManagerService,
   ISwagApp,
-  ISwagBasicSetupConfig,
   SwagBasicActionConfigEventName,
-  ISwagBasicActionConfigCreateVisit,
-  ISwagBasicAction,
   ISwagBasicActionConfig,
   ISwagBasicActionConfigSetVisitServerData,
   ISwagBasicPageNavigation,
-  NgSwagBasicUiClassesService,
-  ISwagBasicPageClassesRuleObject,
-  SwagBasicUi,
-  NgSwagUiManagerService
+  ISwagBasicPageClassesRuleObject
 } from '@simple-web-app-generator/client/basic';
 import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
@@ -30,10 +23,7 @@ export class CoreComponent implements OnInit {
   public isCreated: boolean = false;
   constructor(
     public actionProcessor: NgSwagBasicActionsProcessService,
-    private _rules: NgSwagBasicRulesService,
-    private _client: NgSwagBasicClientManagerService,
-    private _uiClassService: NgSwagBasicUiClassesService,
-    private _uiService: NgSwagUiManagerService
+    private _client: NgSwagBasicClientManagerService
   ) {}
 
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
@@ -42,15 +32,15 @@ export class CoreComponent implements OnInit {
   public pageInfo: ISwagBasicPageNavigation;
 
   ngOnInit() {
-   
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
       this.pageInfo = {
         id: 'test-navigation',
         path: '/test-navigation',
+        type: 'basic-navigation',
         footer: {
           id: 'test-navigation-footer',
-          html: `<div id="footer-test">I am the footer. Some random data: {{visit?.current?.server?.data?.randomData}}</div>`,
-          classes: <ISwagBasicPageClassesRuleObject[]>[
+          html: `<div id="footer-test">I am the footer. Some random data: {{visit?.current?.server?.data?.randomLeaveData}}</div>`,
+          classes: [
             {
               className: ['test-class', 'test-class-1']
             }
@@ -58,6 +48,14 @@ export class CoreComponent implements OnInit {
 
           data: {
             test: 'Data from settings'
+          },
+          attributes: {
+            '[ngStyle]': {
+              background: 'green',
+              color: 'blue',
+              borderRadius: '4px',
+              padding: '12px 16px'
+            }
           }
         },
         header: {
@@ -66,6 +64,9 @@ export class CoreComponent implements OnInit {
         <div id="test">
           <h1>Test {{visit?.current?.data?.test}}</h1>
         </div>`,
+          attributes: {
+            '[ngStyle]': "{background: 'blue'}"
+          },
           classes: <ISwagBasicPageClassesRuleObject[]>[
             {
               className: ['test-class', 'test-class-1']
@@ -86,6 +87,17 @@ export class CoreComponent implements OnInit {
             }
           ]
         },
+        onLeave: [
+          {
+            actionType: 'basic',
+            eventName: SwagBasicActionConfigEventName.SetVisitServerData,
+            args: {
+              data: {
+                randomLeaveData: Math.floor(Math.random() * 100)
+              }
+            }
+          }
+        ],
         onLoad: [
           {
             actionType: SwagBasicActionConfigEventName.Basic,
@@ -112,7 +124,12 @@ export class CoreComponent implements OnInit {
           {
             id: 'my-test-link',
             url: 'https://www.google.com',
-            html: 'My Label'
+            html: 'My Label {{visit?.current?.server?.data?.clickData}}'
+          },
+          {
+            id: 'my-test-link-2',
+            url: 'https://www.youtube.com',
+            html: 'My Youtube {{visit?.current?.server?.data?.clickYoutube}}'
           }
         ]
       };
@@ -126,7 +143,7 @@ export class CoreComponent implements OnInit {
           data: {
             fromClient: 'this came from data',
             randomData: Math.floor(Math.random() * 100),
-            test2: "YO"
+            test2: 'YO'
           },
           query: '?test=true'
         }

@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { ISwagBasicVisit, SwagBasicVisitManager } from '../../../services';
 import {
   NgSwagBasicActionsProcessService,
@@ -14,7 +20,7 @@ import { tap } from 'rxjs/operators';
   templateUrl: './swag-basic-page-navigation.component.html',
   styleUrls: ['./swag-basic-page-navigation.component.css']
 })
-export class SwagBasicPageNavigationComponent implements OnInit {
+export class SwagBasicPageNavigationComponent implements OnInit, OnDestroy {
   @Input()
   public pageInfo: ISwagBasicPageNavigation;
   public load$: Observable<ISwagBasicVisit>;
@@ -33,5 +39,9 @@ export class SwagBasicPageNavigationComponent implements OnInit {
     this.load$ = this._action.process$(this.pageInfo.onLoad);
     this.linksLoad$ = this._action.process$(this.pageInfo.onLinksLoad);
     this.visit$ = this._client.getVisitManager().pipe();
+  }
+
+  ngOnDestroy(): void {
+    this._action.process(this.pageInfo.onLeave || []).then();
   }
 }

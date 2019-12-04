@@ -1,6 +1,7 @@
 import {
   Compiler,
   Component,
+  HostListener,
   Input,
   NgModule,
   OnInit,
@@ -12,15 +13,17 @@ import {
   ISwagBasicLinkRender,
   ISwagBasicTemplate
 } from '../../../components';
+import { ISwagBasicVisit, SwagBasicUiUtils } from '../../../services';
 import {
+  NgSwagBasicActionsProcessService,
   NgSwagBasicClientManagerService,
   NgSwagUiManagerService
 } from '../../services';
+import { cloneDeep, get } from 'lodash';
 
 import { CommonModule } from '@angular/common';
-import { ISwagBasicVisit } from '../../../services';
 import { Observable } from 'rxjs';
-import { cloneDeep } from 'lodash';
+import { SwagBasicSiteLinkService } from './swag-basic-site-link.service';
 
 @Component({
   selector: 'swag-basic-site-link',
@@ -38,8 +41,24 @@ export class SwagBasicSiteLinkComponent implements OnInit {
 
   constructor(
     private _uiManager: NgSwagUiManagerService,
-    private _compiler: Compiler
+    private _compiler: Compiler,
+    private _linkService: SwagBasicSiteLinkService,
+    private _action: NgSwagBasicActionsProcessService
   ) {}
+
+  @HostListener('click', ['$event'])
+  onClick(evt: Event) {
+    const anchor: HTMLAnchorElement = <HTMLAnchorElement>evt.target;
+    const target: string = get(this.settings, 'attributes.target');
+    const onLinkClick = this.settings.onLinkClick || [];
+
+    if (this._linkService.shouldOpenInNewTab(this.settings))
+      evt.preventDefault();
+
+    this._action.process(onLinkClick).then(() => {
+      this._linkService.navigate(anchor, this.settings);
+    });
+  }
 
   ngOnInit() {}
 
@@ -96,6 +115,11 @@ export class SwagBasicSiteLinkComponent implements OnInit {
   }
 
   private _getDefaultRender(): ISwagBasicLinkRender {
+    const pathTags = this._linkService.getUrlTags(this.settings);
+    const routeTag = !!pathTags.url ? pathTags.url : pathTags.route;
+    const attributeString: string = SwagBasicUiUtils.createAttributeString(
+      this.settings.attributes || {}
+    );
     return {
       body: `
       <ng-container *ngIf="(style$ | async)">
@@ -109,7 +133,7 @@ export class SwagBasicSiteLinkComponent implements OnInit {
          : ''
      }
      </ng-container>`,
-      tag: `id="${this.settings.id}" [href]="settings?.url"`
+      tag: `id="${this.settings.id}" ${routeTag} ${attributeString}`
     };
   }
 }

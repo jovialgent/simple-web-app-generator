@@ -1,17 +1,17 @@
-<ng-container *ngIf="(load$ | async) as loadedData">
-    <ng-container *ngIf="(linksLoad$ | async) as linksLoadData">
-        <ng-container *ngIf="(visit$ | async) as visit">
-            <div [id]='pageInfo?.id'
-                class="swag-basic-page-navigation">
-                <swag-basic-swag-basic-page-header [settings]="pageInfo?.header"></swag-basic-swag-basic-page-header>
-                <main class="swag-basic-page-navigation-main">
-                    <ng-container *ngFor="let link of pageInfo?.links">
-                        <swag-basic-site-link [settings]="link"></swag-basic-site-link>
-                    </ng-container>
-                </main>
-                <swag-basic-swag-basic-page-footer [settings]="pageInfo?.footer"></swag-basic-swag-basic-page-footer>
-            </div>
-
-        </ng-container>
+<ng-container *ngIf="(load$ | async) as loadedData"></ng-container>
+<ng-container *ngIf="(linksLoad$ | async) as linksLoadData">
+    <ng-container *ngIf="(visit$ | async) as visit">
+        <div [id]='pageInfo?.id'
+            class="swag-basic-page-navigation">
+            <swag-basic-swag-basic-page-header class="swag-page-basic-navigation-footer"
+                [settings]="pageInfo?.header"></swag-basic-swag-basic-page-header>
+            <main class="swag-page-basic-navigation">
+                <ng-container *ngFor="let link of pageInfo?.links">
+                    <swag-basic-site-link [settings]="link"></swag-basic-site-link>
+                </ng-container>
+            </main>
+            <swag-basic-swag-basic-page-footer class="swag-page-basic-navigation-footer"
+                [settings]="pageInfo?.footer"></swag-basic-swag-basic-page-footer>
+        </div>
     </ng-container>
 </ng-container>

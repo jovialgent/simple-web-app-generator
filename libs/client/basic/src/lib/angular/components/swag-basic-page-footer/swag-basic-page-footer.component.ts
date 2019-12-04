@@ -12,6 +12,7 @@ import {
   ISwagBasicPageFooterRender,
   ISwagBasicTemplate
 } from '../../../components';
+import { ISwagBasicVisit, SwagBasicUiUtils } from '../../../services';
 import {
   NgSwagBasicClientManagerService,
   NgSwagBasicRulesService,
@@ -20,7 +21,6 @@ import {
 } from '../../services';
 
 import { CommonModule } from '@angular/common';
-import { ISwagBasicVisit } from '../../../services';
 import { Observable } from 'rxjs';
 import { cloneDeep } from 'lodash';
 
@@ -100,6 +100,10 @@ export class SwagBasicPageFooterComponent implements OnInit {
   }
 
   private _getDefaultRender(): ISwagBasicPageFooterRender {
+    const attributeString: string = SwagBasicUiUtils.createAttributeString(
+      this.settings.attributes || {}
+    );
+    
     return {
       body: `
       <ng-container *ngIf="(style$ | async)">
@@ -107,7 +111,7 @@ export class SwagBasicPageFooterComponent implements OnInit {
       <ng-container *ngIf="(visit$ | async) as visit">
      ${this.settings.html}
      </ng-container>`,
-      tag: `id="${this.settings.id}"`
+      tag: `id="${this.settings.id}" ${attributeString}`
     };
   }
 }

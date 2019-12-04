@@ -17,6 +17,7 @@ import {
   ISwagBasicTemplate,
   SwagBasicPageHeader
 } from '../../../components';
+import { ISwagBasicVisit, SwagBasicUiUtils } from '../../../services';
 import {
   NgSwagBasicClientManagerService,
   NgSwagBasicRulesService,
@@ -27,7 +28,6 @@ import { Observable, combineLatest, of } from 'rxjs';
 import { cloneDeep, isEmpty } from 'lodash';
 
 import { CommonModule } from '@angular/common';
-import { ISwagBasicVisit } from '../../../services';
 import { SwagBasicTemplateComponent } from '../swag-basic-template/swag-basic-template.component';
 
 @Component({
@@ -121,8 +121,6 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
     const hasLocalRenderData = !isEmpty(this.settings.renderData);
     const hasCustomRenderData = !isEmpty(customTemplate);
 
-    console.log(hasLocalRenderData);
-
     return hasLocalRenderData
       ? { ...this.settings.renderData, ...this._getDefaultRender() }
       : hasCustomRenderData
@@ -131,6 +129,9 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
   }
 
   private _getDefaultRender(): ISwagBasicPageHeaderRender {
+    const attributeString: string = SwagBasicUiUtils.createAttributeString(
+      this.settings.attributes || {}
+    );
     return {
       body: `
       <ng-container *ngIf="(style$ | async)">
@@ -138,7 +139,7 @@ export class SwagBasicPageHeaderComponent implements OnInit, AfterViewInit {
       <ng-container *ngIf="(visit$ | async) as visit">
      ${this.settings.html}
      </ng-container>`,
-      tag: `id="${this.settings.id}"`
+      tag: `id="${this.settings.id}" ${attributeString}`
     };
   }
 }
