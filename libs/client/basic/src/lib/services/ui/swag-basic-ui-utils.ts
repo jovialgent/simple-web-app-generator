@@ -44,8 +44,6 @@ export class SwagBasicUiUtils {
   private static _createAttribute(attributeTag: string, value: any): string {
     const parsedValue: string = this._parseAttributeValue(value);
 
-    console.log(`${attributeTag}="${parsedValue}"`);
-
     return `${attributeTag}="${parsedValue}"`;
   }
 
