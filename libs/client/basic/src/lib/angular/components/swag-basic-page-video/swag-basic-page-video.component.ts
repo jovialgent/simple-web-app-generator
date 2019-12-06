@@ -1,28 +1,21 @@
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
-import { ISwagBasicVisit, SwagBasicVisitManager } from '../../../services';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   NgSwagBasicActionsProcessService,
   NgSwagBasicClientManagerService
 } from '../../services';
 
-import { ISwagBasicPageNavigation } from '../../../components/swag-basic-page-navigation';
+import { ISwagBasicPageVideo } from '../../../components/swag-basic-page-video/models';
+import { ISwagBasicVisit } from '../../../services';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'swag-basic-page-navigation',
-  templateUrl: './swag-basic-page-navigation.component.html',
-  styleUrls: ['./swag-basic-page-navigation.component.css']
+  selector: 'swag-basic-page-video',
+  templateUrl: './swag-basic-page-video.component.html',
+  styleUrls: ['./swag-basic-page-video.component.scss']
 })
-export class SwagBasicPageNavigationComponent implements OnInit, OnDestroy {
+export class SwagBasicPageVideoComponent implements OnInit {
   @Input()
-  public pageInfo: ISwagBasicPageNavigation;
+  public pageInfo: ISwagBasicPageVideo;
   public load$: Observable<ISwagBasicVisit>;
   public linksLoad$: Observable<ISwagBasicVisit>;
   public visit$: Observable<{
@@ -37,7 +30,6 @@ export class SwagBasicPageNavigationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.load$ = this._action.process$(this.pageInfo.onLoad);
-    this.linksLoad$ = this._action.process$(this.pageInfo.onLinksLoad);
     this.visit$ = this._client.getVisitManager();
   }
 

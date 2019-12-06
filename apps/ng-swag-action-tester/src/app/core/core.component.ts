@@ -13,6 +13,7 @@ import {
 import { Subject, Observable, pipe, of } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
 import { config } from './app-setup';
+import { ISwagBasicPageVideo } from 'libs/client/basic/src/lib/components/swag-basic-page-video/models';
 
 @Component({
   selector: 'ng-swag-action-tester-core',
@@ -29,14 +30,14 @@ export class CoreComponent implements OnInit {
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
   public actionProcessor$: Observable<any>;
   public sampleAction: ISwagBasicActionConfig;
-  public pageInfo: ISwagBasicPageNavigation;
+  public pageInfo: ISwagBasicPageVideo;
 
   ngOnInit() {
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
       this.pageInfo = {
         id: 'test-navigation',
         path: '/test-navigation',
-        type: 'basic-navigation',
+        type: 'basic-video',
         footer: {
           id: 'test-navigation-footer',
           html: `<div id="footer-test">I am the footer. Some random data: {{visit?.current?.server?.data?.randomLeaveData}}</div>`,
@@ -109,29 +110,11 @@ export class CoreComponent implements OnInit {
             }
           }
         ],
-        onLinksLoad: [
-          {
-            actionType: SwagBasicActionConfigEventName.Basic,
-            eventName: SwagBasicActionConfigEventName.SetVisitData,
-            args: {
-              data: {
-                loadedLinksNav: true
-              }
-            }
-          }
-        ],
-        links: [
-          {
-            id: 'my-test-link',
-            url: 'https://www.google.com',
-            html: 'My Label {{visit?.current?.server?.data?.clickData}}'
-          },
-          {
-            id: 'my-test-link-2',
-            url: 'https://www.youtube.com',
-            html: 'My Youtube {{visit?.current?.server?.data?.clickYoutube}}'
-          }
-        ]
+        player: {
+          id: 'my-player',
+          src: 'http://www.example.com/waterfall-video.mp4',
+          type: 'basic-native'
+        }
       };
     });
 

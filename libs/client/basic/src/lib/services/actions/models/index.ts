@@ -7,3 +7,4 @@ export * from './swag-basic-action-config-set-visit-data.interface';
 export * from './swag-basic-action-config-set-visit-server-data.interface';
 export * from './swag-basic-action-config-create-visit.interface';
 export * from './swag-basic-action-config.interface';
+export * from './swag-basic-action-cuepoint-config.interface';
