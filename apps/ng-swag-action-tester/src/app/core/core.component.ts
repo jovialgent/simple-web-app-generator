@@ -8,12 +8,17 @@ import {
   ISwagBasicActionConfig,
   ISwagBasicActionConfigSetVisitServerData,
   ISwagBasicPageNavigation,
-  ISwagBasicPageClassesRuleObject
+  ISwagBasicPageClassesRuleObject,
+  NgSwagBasicEventBusService,
+  NgSwagBasicTimeupdateService,
+  SwagBasicVideoEventName,
+  ISwagBasicVideoEventArgs
 } from '@simple-web-app-generator/client/basic';
-import { Subject, Observable, pipe, of } from 'rxjs';
-import { tap, delay } from 'rxjs/operators';
+import { Subject, Observable, pipe, of, animationFrameScheduler } from 'rxjs';
+import { tap, delay, repeat } from 'rxjs/operators';
 import { config } from './app-setup';
 import { ISwagBasicPageVideo } from 'libs/client/basic/src/lib/components/swag-basic-page-video/models';
+import { ISwagBasicUiTimeupdate } from 'libs/client/basic/src/lib/services/ui/models/swag-basic-ui-timeupdate.interface';
 
 @Component({
   selector: 'ng-swag-action-tester-core',
@@ -24,13 +29,17 @@ export class CoreComponent implements OnInit {
   public isCreated: boolean = false;
   constructor(
     public actionProcessor: NgSwagBasicActionsProcessService,
-    private _client: NgSwagBasicClientManagerService
+    private _client: NgSwagBasicClientManagerService,
+    private _bus: NgSwagBasicEventBusService,
+    private _timeupdate: NgSwagBasicTimeupdateService
   ) {}
 
   public visitManager: SwagBasicVisitManager = new SwagBasicVisitManager();
   public actionProcessor$: Observable<any>;
   public sampleAction: ISwagBasicActionConfig;
   public pageInfo: ISwagBasicPageVideo;
+  public currentTime: string = '00:00';
+  public duration: string = '00:00';
 
   ngOnInit() {
     this._client.setUpApp$(config).subscribe((data: ISwagApp) => {
@@ -40,23 +49,16 @@ export class CoreComponent implements OnInit {
         type: 'basic-video',
         footer: {
           id: 'test-navigation-footer',
-          html: `<div id="footer-test">I am the footer. Some random data: {{visit?.current?.server?.data?.randomLeaveData}}</div>`,
+          html: `<div id="footer-test">
+          Current Video Status: {{visit?.current?.data?.videoStatus}}
+          </div>`,
           classes: [
             {
               className: ['test-class', 'test-class-1']
             }
           ],
-
           data: {
             test: 'Data from settings'
-          },
-          attributes: {
-            '[ngStyle]': {
-              background: 'green',
-              color: 'blue',
-              borderRadius: '4px',
-              padding: '12px 16px'
-            }
           }
         },
         header: {
@@ -112,31 +114,91 @@ export class CoreComponent implements OnInit {
         ],
         player: {
           id: 'my-player',
-          src: 'http://www.example.com/waterfall-video.mp4',
-          type: 'basic-native'
+          src:
+            'https://simple-web-application-gen-cdn.com/demo/videos/test-video.mp4',
+          type: 'basic-native',
+          attributes: {
+            controls: 'true'
+          },
+          onPlay: [
+            {
+              actionType: SwagBasicActionConfigEventName.Basic,
+              eventName: SwagBasicActionConfigEventName.SetVisitData,
+              args: {
+                data: {
+                  videoStatus: 'Playing'
+                }
+              }
+            }
+          ],
+          onPause: [
+            {
+              actionType: SwagBasicActionConfigEventName.Basic,
+              eventName: SwagBasicActionConfigEventName.SetVisitData,
+              args: {
+                data: {
+                  videoStatus: 'Paused'
+                }
+              }
+            }
+          ],
+          onVolumeChange: [
+            {
+              actionType: SwagBasicActionConfigEventName.Basic,
+              eventName: SwagBasicActionConfigEventName.SetVisitData,
+              args: {
+                data: {
+                  videoVolumeStatus: 'Changed'
+                }
+              }
+            }
+          ]
         }
       };
     });
 
-    setTimeout(() => {
-      this.sampleAction = <ISwagBasicActionConfigSetVisitServerData>{
-        actionType: 'basic',
-        eventName: SwagBasicActionConfigEventName.SetVisitServerData,
-        args: {
-          data: {
-            fromClient: 'this came from data',
-            randomData: Math.floor(Math.random() * 100),
-            test2: 'YO'
-          },
-          query: '?test=true'
-        }
-      };
-
-      this.fireAction(this.sampleAction);
-    }, 6000);
+    this._bus.on(
+      SwagBasicVideoEventName.Timeupdate,
+      (args: ISwagBasicVideoEventArgs) => {
+        this.duration = args.durationTimestamp;
+        this.currentTime = args.timestamp;
+      }
+    );
   }
 
   fireAction(action: ISwagBasicActionConfig) {
     this.actionProcessor.process([action]).then(data => {});
+  }
+
+  clickButton() {
+    this._bus.emit(SwagBasicVideoEventName.Play, {});
+  }
+
+  play() {
+    this._bus.emit(SwagBasicVideoEventName.Play, { id: 'my-player' });
+  }
+  pause() {
+    this._bus.emit(SwagBasicVideoEventName.Pause, { id: 'my-player' });
+  }
+  mute() {
+    this._bus.emit(SwagBasicVideoEventName.Mute, { id: 'my-player' });
+  }
+  unmute() {
+    this._bus.emit(SwagBasicVideoEventName.Unmute, { id: 'my-player' });
+  }
+  setVolume() {
+    this._bus.emit(SwagBasicVideoEventName.SetVolume, {
+      level: 0.25,
+      id: 'my-player'
+    });
+  }
+  seek() {
+    this._bus.emit(SwagBasicVideoEventName.Seek, { currentTime: 6 });
+  }
+  replay() {
+    this._bus.emit(SwagBasicVideoEventName.Replay, {});
+  }
+  destroy() {
+    this._bus.emit(SwagBasicVideoEventName.Destroy, {});
   }
 }

@@ -1,3 +1,12 @@
 <ng-container *ngIf="pageInfo">
     <swag-basic-page-video [pageInfo]="pageInfo"></swag-basic-page-video>
 </ng-container>
+<div>{{currentTime}}/{{duration}}</div>
+<button (click)="play()">Play</button>
+<button (click)="pause()">Pause</button>
+<button (click)="mute()">Mute</button>
+<button (click)="unmute()">Unmute</button>
+<button (click)="setVolume()">Set Volume</button>
+<button (click)="seek()">Seek</button>
+<button (click)="replay()">Replay</button>
+<button (click)="destroy()">Destroy</button>

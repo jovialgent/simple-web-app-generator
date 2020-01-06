@@ -11,7 +11,9 @@ export interface ISwagBasicVideo extends ISwagBasicTemplate {
   onPause?: ISwagBasicActionConfig[];
   onMute?: ISwagBasicActionConfig[];
   onUnmute?: ISwagBasicActionConfig[];
+  onVolumeChange?: ISwagBasicActionConfig[];
   onBuffering?: ISwagBasicActionConfig[];
-  onTimeupdate?: ISwagBasicActionCuepointConfig[];
+  cuepoints?: ISwagBasicActionCuepointConfig[];
   onReady?: ISwagBasicActionConfig[];
+  onReplay?: ISwagBasicActionConfig[];
 }

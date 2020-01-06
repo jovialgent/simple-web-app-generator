@@ -41,6 +41,24 @@ export class SwagBasicUiUtils {
     return result;
   }
 
+  static createTimestamp(timeInSeconds: number): string {
+    const calculatedMinutes = Math.floor(timeInSeconds / 60);
+    const calculatedHours = calculatedMinutes / 60;
+    const calculatedSeconds = Math.floor(timeInSeconds % 60);
+    const hours =
+      calculatedHours >= 10 ? `${calculatedHours}` : `0${calculatedHours}`;
+    const minutes =
+      calculatedMinutes >= 10
+        ? `${calculatedMinutes}`
+        : `0${calculatedMinutes}`;
+    const seconds =
+      calculatedSeconds >= 10
+        ? `${calculatedSeconds}`
+        : `0${calculatedSeconds}`;
+
+    return `${calculatedHours > 0 ? hours + ':' : ''}${minutes}:${seconds}`;
+  }
+
   private static _createAttribute(attributeTag: string, value: any): string {
     const parsedValue: string = this._parseAttributeValue(value);
 

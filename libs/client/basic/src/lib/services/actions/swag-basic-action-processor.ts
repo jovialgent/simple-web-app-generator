@@ -45,6 +45,10 @@ export class SwagBasicActionProcessor extends Subject<any> {
     return this.actionTypeMap;
   }
 
+  process(actions: ISwagBasicActionConfig[]): Promise<ISwagBasicVisit> {
+    return this.process$(actions).toPromise();
+  }
+
   process$(actions: ISwagBasicActionConfig[]): Observable<ISwagBasicVisit> {
     this.next({
       processing: true,
@@ -62,7 +66,8 @@ export class SwagBasicActionProcessor extends Subject<any> {
       return of(this._appManager.getVisit());
     }
 
-    return this._appManager.getRules()
+    return this._appManager
+      .getRules()
       .evaluateAll$(actions, this._appManager.getVisit())
       .pipe(
         map((filteredActions: ISwagBasicActionConfig[]): Observable<

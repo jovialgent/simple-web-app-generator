@@ -1,6 +1,7 @@
 import {
   Compiler,
   Component,
+  ElementRef,
   Input,
   NgModule,
   OnInit,
@@ -10,21 +11,27 @@ import {
 import {
   ISwagBasicTemplate,
   ISwagBasicVideo,
+  ISwagBasicVideoEventArgs,
   ISwagBasicVideoNative,
   ISwagBasicVideoNativeRender,
-  SwagBasicPageHeader
+  SwagBasicPageHeader,
+  SwagBasicVideoEventName
 } from '../../../components';
 import { ISwagBasicVisit, SwagBasicUiUtils } from '../../../services';
 import {
+  NgSwagBasicActionsProcessService,
   NgSwagBasicClientManagerService,
+  NgSwagBasicEventBusService,
   NgSwagBasicRulesService,
+  NgSwagBasicTimeupdateService,
   NgSwagBasicUiClassesService,
   NgSwagUiManagerService
 } from '../../services';
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, get, isEmpty } from 'lodash';
 
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
+import { SwagBasicVideoNative } from '../../../components/swag-basic-video-native/swag-basic-video-native';
 
 @Component({
   selector: 'swag-basic-video-native',
@@ -53,8 +60,9 @@ export class SwagBasicSiteVideoNativeComponent implements OnInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
+    const path = 'site.video.player.native';
     const template = this._uiManager.getTemplate(
-      'site.video.player.native',
+      path,
       this._getDefaultRender(),
       this.settings.renderData
     );
@@ -70,22 +78,40 @@ export class SwagBasicSiteVideoNativeComponent implements OnInit {
       }>;
       public settings: ISwagBasicTemplate;
       public style$: Observable<any>;
+      @ViewChild('videoPlayer', {
+        static: true
+      })
+      videoPlayer: ElementRef;
 
       constructor(
         private _client: NgSwagBasicClientManagerService,
-        private _uiManager: NgSwagUiManagerService
+        private _uiManager: NgSwagUiManagerService,
+        private _eventBus: NgSwagBasicEventBusService,
+        private _timeupdate: NgSwagBasicTimeupdateService,
+        private _actionProcessor: NgSwagBasicActionsProcessService
       ) {}
 
       ngOnInit() {
+        const uiMap = this._uiManager.getUiMap();
+        const nativeVideoService: SwagBasicVideoNative = get(uiMap, path);
+        const elementId = `#${settings.id}`;
+
         this.visit$ = this._client.getVisitManager();
         this.settings = settings;
-
-        const elementId = `#${this.settings.id}`;
 
         this.style$ = this._uiManager.getStyle$(
           elementId,
           this.settings.classes
         );
+
+        const videoService = nativeVideoService.createVideoService();
+
+        videoService.setUp(this.videoPlayer.nativeElement, {
+          timeupdate: this._timeupdate.getTimeupdate(),
+          eventBus: this._eventBus.getEventBus(),
+          actionProcessor: this._actionProcessor.getProcessor(),
+          player: this.settings
+        });
       }
       ngAfterViewInit() {}
     }
@@ -132,13 +158,12 @@ export class SwagBasicSiteVideoNativeComponent implements OnInit {
       this.settings.attributes || {}
     );
     return {
-      body: `
-      <ng-container *ngIf="(style$ | async)">
-      </ng-container>
-      <ng-container *ngIf="(visit$ | async) as visit">
-     ${this.settings.html}
-     </ng-container>`,
-      tag: `id="${this.settings.id}" ${attributeString}`
+      tag: `
+        #videoPlayer
+        id="${this.settings.id}" 
+        ${attributeString} 
+        src="${this.settings.src}"
+      `
     };
   }
 }

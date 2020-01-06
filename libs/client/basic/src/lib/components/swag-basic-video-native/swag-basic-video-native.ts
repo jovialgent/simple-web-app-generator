@@ -1,11 +1,12 @@
-import { ISwagBasicComponent } from '../models';
+import { ISwagBasicComponent, ISwagBasicVideoSetup } from '../models';
+
 import { ISwagBasicVideoNativeRender } from './models';
+import { SwagBasicVideoNativeService } from './services';
 import { isEmpty } from 'lodash';
 import { render } from 'mustache';
 
 export class SwagBasicVideoNative {
   private _emptyRenderData: ISwagBasicVideoNativeRender = {
-    body: '',
     tag: ''
   };
 
@@ -23,9 +24,10 @@ export class SwagBasicVideoNative {
   }
 
   getTemplate(): string {
-    return `<video controls preload="metadata">
-    <source src="http://www.example.com/waterfall-video.mp4" type="video/mp4"/>
-    Video not supported.
-</video>`;
+    return `<video {{{tag}}}></video>`;
+  }
+
+  createVideoService(): SwagBasicVideoNativeService {
+    return new SwagBasicVideoNativeService();
   }
 }

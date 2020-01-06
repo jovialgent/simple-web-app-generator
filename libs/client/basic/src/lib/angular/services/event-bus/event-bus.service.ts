@@ -1,50 +1,41 @@
-import { Injectable } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { EventBusService } from '../../../services';
 import { ISubscriptionEvent } from './models';
+import { Injectable } from '@angular/core';
+import { cloneDeep } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NgSwagBasicEventBusService extends Subject<any> {
+export class NgSwagBasicEventBusService {
   private _listeners: ISubscriptionEvent[] = [];
+  private _eventBus: EventBusService;
 
-  constructor() { super() }
+  constructor() {
+    this._eventBus = new EventBusService();
+  }
 
   public one(eventName: string, listener: (arg?: unknown) => {} | void): void {
-    const subscriptionEvent: () => ISubscriptionEvent = this.on(eventName, (args?: unknown) => {
-      listener(args);
-      subscriptionEvent();
-    });
+    this._eventBus.one(eventName, listener);
   }
 
-  public on(eventName: string, listener: (arg?: unknown) => {} | void): () => ISubscriptionEvent {
-    const newListner: ISubscriptionEvent = this._createSubscriptionEvent(eventName, listener);
-
-    this._listeners = [...this._listeners, newListner];
-
-    return (): ISubscriptionEvent => {
-      const currentListeners: ISubscriptionEvent[] = this._listeners.filter((subscriptionEvent: ISubscriptionEvent) => subscriptionEvent.listener !== listener);
-      const unsubscribeListener: ISubscriptionEvent = this._listeners.find((subscriptionEvent: ISubscriptionEvent) => subscriptionEvent.listener === listener);
-
-      !!unsubscribeListener ? unsubscribeListener.subscription.unsubscribe() : null;
-      this._listeners = currentListeners;
-
-      return unsubscribeListener;
-    }
+  public on(
+    eventName: string,
+    listener: (arg?: unknown) => {} | void
+  ): () => ISubscriptionEvent {
+    return this._eventBus.on(eventName, listener);
   }
 
-  public emit(eventName, args?: unknown) {
-    this.next({ eventName, args });
+  public emit(eventName, args: unknown) {
+    this._eventBus.emit(eventName, args);
   }
-  private _createSubscriptionEvent(eventName: string, listener: (args?: unknown) => {} | void): ISubscriptionEvent {
-    const subscription: Subscription = this.subscribe((eventObj) => {
-      eventObj.eventName === eventName ? listener(eventObj.args) : null;
-    });
 
-    return {
-      eventName,
-      listener,
-      subscription
-    }
+  public getEventBus(): EventBusService {
+    return this._eventBus;
+  }
+
+  public setEventBus(eventBus: EventBusService): EventBusService {
+    this._eventBus = cloneDeep(eventBus);
+
+    return this._eventBus;
   }
 }

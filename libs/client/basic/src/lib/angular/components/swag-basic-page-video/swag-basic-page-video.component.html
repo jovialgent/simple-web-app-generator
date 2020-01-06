@@ -1,15 +1,17 @@
 <ng-container *ngIf="(load$ | async) as loadedData">
     <ng-container *ngIf="(visit$ | async) as visit">
+        <ng-container *ngIf="(ready$ | async) as ready"></ng-container>
         <div [id]='pageInfo?.id'
-            class="swag-basic-page-navigation">
-            <swag-basic-swag-basic-page-header class="swag-page-basic-navigation-footer"
+            [hidden]="!isReady"
+            class="swag-basic-page-container">
+            <swag-basic-swag-basic-page-header class="swag-basic-page-header swag-page-basic-video-header"
                 [settings]="pageInfo?.header"></swag-basic-swag-basic-page-header>
-            <main class="swag-page-basic-navigation">
+            <main class="swag-basic-page swag-basic-page-video">
                 <ng-container *ngIf="pageInfo?.player?.type === 'basic-native'">
                     <swag-basic-video-native [settings]="pageInfo.player"></swag-basic-video-native>
                 </ng-container>
             </main>
-            <swag-basic-swag-basic-page-footer class="swag-page-basic-navigation-footer"
+            <swag-basic-swag-basic-page-footer class="swag-basic-page-footer swag-page-basic-video-footer"
                 [settings]="pageInfo?.footer"></swag-basic-swag-basic-page-footer>
         </div>
     </ng-container>
